@@ -99,7 +99,7 @@ if [ 1 -eq $STAGE ]; then
 	in_list "$EGENCACHE" ${TRUE_LIST[@]} &&
 	if [[ "git" == "$SYNC_TYPE" ]]; then
 		echo "---------- Updating metadata cache for Git portage tree ----------"
-		egencache --repo=gentoo --update --jobs=$((`grep "^processor" /proc/cpuinfo | wc -l`+1))
+		egencache --repo=gentoo --update --jobs=$((`grep "^processor" /proc/cpuinfo -c`+1))
         	[ 0 -ne $? ] && echo "Stage $STAGE: Metadata update failed ;-( =======" && exit $STAGE
         fi
 

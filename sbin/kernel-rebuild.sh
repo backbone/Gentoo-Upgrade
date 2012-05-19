@@ -43,7 +43,7 @@ fi
 # disable distcc for -march=native -mtune=native
 
 grep 'CONFIG_X86_MARCH_NATIVE=y' .config &>/dev/null
-jobs=$((`grep "^processor" /proc/cpuinfo | wc -l`+1))
+jobs=$((`grep "^processor" /proc/cpuinfo -c`+1))
 if [[ "$?" == 0 ]]; then
 	make -j$jobs
 	[ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
