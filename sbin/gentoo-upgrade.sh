@@ -271,14 +271,9 @@ if [ 10 -eq $STAGE ]; then
 	        touch /etc/portage/need_upgrade_python
         fi
 
-        echo 'Looking for necessity to upgrade @system packages...'
-        if [ `emerge -uDNp --with-bdeps=y @system 2>&1 | grep '^\[' | wc -l` != 0 ]; then
-	        echo '------- Upgrading @system packages -------'
-        	emerge -uDNqv --with-bdeps=y @system
-                [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
-        else
-        	echo '------- No @system packages to upgrade! -------'
-        fi
+        echo '------- Upgrading @system packages -------'
+        emerge -uDNqv --with-bdeps=y @system
+        [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
@@ -322,14 +317,9 @@ fi
 if [ 12 -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        if [ `emerge -uDNp --with-bdeps=y @world 2>&1 | grep '^\[' | wc -l` != 0 ]; then
-	        echo '------- Upgrading @world packages -------'
-        	emerge -uDNqv --with-bdeps=y @world
-                [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
-        	echo '------- Scanning for missed shared libraries -------'
-        else
-        	echo '------- No @world packages to upgrade! -------'
-        fi
+        emerge -uDNqv --with-bdeps=y @world
+        [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
+        echo '------- Scanning for missed shared libraries -------'
 
         let STAGE++
 fi
