@@ -355,8 +355,12 @@ if [ 14 -eq $STAGE ]; then
         if [ `which eclean 2>/dev/null` ]; then
                 eclean packages
                 [ 0 -ne $? ] && echo "Stage $STAGE: eclean packages failed ;-( =======" && exit $STAGE
-                eclean distfiles
-                [ 0 -ne $? ] && echo "Stage $STAGE: eclean distfiles failed ;-( =======" && exit $STAGE
+
+                in_list "$ECLEAN_DISTFILES" ${TRUE_LIST[@]}
+                if [ 0 -eq $? ]; then
+                        eclean distfiles
+                        [ 0 -ne $? ] && echo "Stage $STAGE: eclean distfiles failed ;-( =======" && exit $STAGE
+                fi
         fi
         rm -rf /var/tmp/portage/*
         [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf /var/tmp/portage/* failed ;-( =======" && exit $STAGE
