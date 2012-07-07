@@ -63,7 +63,7 @@ REVISION=`cat /usr/src/linux/include/config/kernel.release`
 which dracut &>/dev/null && dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
 
 sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
-        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION~g" \
+        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
         /boot/grub/grub.conf
 
 mount -o remount,ro /boot
