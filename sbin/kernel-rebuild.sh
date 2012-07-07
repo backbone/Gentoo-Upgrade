@@ -59,7 +59,12 @@ make install
 make modules_install
 
 REVISION=`cat /usr/src/linux/include/config/kernel.release`
-sed -i "s~\/boot\/vmlinuz-[23][^ ]*~\/boot\/vmlinuz-$REVISION~g" /boot/grub/grub.conf
+
+which dracut &>/dev/null && dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
+
+sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
+        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION~g" \
+        /boot/grub/grub.conf
 
 mount -o remount,ro /boot
 
