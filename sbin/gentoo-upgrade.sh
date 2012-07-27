@@ -188,7 +188,7 @@ if [ 5 -eq $STAGE ]; then
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_libtool_rebuild ;-( =======" && exit $STAGE
         fi
         if [ -f /etc/portage/need_glibc_rebuild ]; then
-                emerge -1vq sys-libs/glibc
+                emerge -1vq sys-kernel/linux-headers sys-libs/glibc
                 rm /etc/portage/need_glibc_rebuild
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_glibc_rebuild ;-( =======" && exit $STAGE
         fi
