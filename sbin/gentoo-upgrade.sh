@@ -385,6 +385,8 @@ if [ 16 -eq $STAGE ]; then
                 # [ 0 -ne $? ] && echo "Stage $STAGE: glsa-check fix failed ;-( =======" && exit $STAGE
         fi
 
+        emerge -1pv @security
+
         let STAGE++
 fi
 
