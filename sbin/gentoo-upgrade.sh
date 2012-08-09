@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STAGE=1
+STAGE=0
 
 source /etc/make.conf
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
@@ -43,6 +43,17 @@ function in_list()
 
 TRUE_LIST=(TRUE True true YES Yes yes 1)
 FALSE_LIST=(FALSE False false NO No no 0)
+
+# Stage 0: remounting file systems ro->rw
+if [ 0 -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: remounting file systems ro->rw ======="
+	for fs in $RW_REMOUNT; do
+		mount -o remount,rw $fs
+		[ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,rw $fs failed ;-( =======" && exit $STAGE
+	done
+
+	let STAGE++
+fi
 
 # Stage 1: sync portage tree
 if [ 1 -eq $STAGE ]; then
@@ -417,6 +428,17 @@ if [ 19 -eq $STAGE ]; then
         [ 0 -ne $? ] && echo "Stage $STAGE: etc-update failed ;-( =======" && exit $STAGE
 
         let STAGE++
+fi
+
+# Stage 20: remounting file systems rw->ro
+if [ 20 -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: remounting file systems rw->ro ======="
+	for fs in $RO_REMOUNT; do
+		mount -o remount,ro $fs
+	        [ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,ro $fs failed ;-( =======" && exit $STAGE
+	done
+
+	let STAGE++
 fi
 
 exit 0
