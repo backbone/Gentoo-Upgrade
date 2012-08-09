@@ -434,7 +434,7 @@ fi
 if [ 20 -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems rw->ro ======="
 	for fs in $RO_REMOUNT; do
-		mount -o remount,ro $fs
+		mount -f -o remount,ro $fs
 	        [ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,ro $fs failed ;-( =======" && exit $STAGE
 	done
 
