@@ -1,7 +1,7 @@
 #!/bin/bash
 
 STAGE=0
-NICE_CMD=nice -n 19 ionice -c2 -n7
+NICE_CMD="nice -n 19 ionice -c2 -n7"
 
 source /etc/make.conf
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
