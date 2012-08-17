@@ -1,6 +1,7 @@
 #!/bin/bash
 
 STAGE=0
+NICE_CMD=nice -n 19 ionice -c2 -n7
 
 source /etc/make.conf
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
@@ -103,14 +104,14 @@ if [ 1 -eq $STAGE ]; then
 	fi
 
         # sync portage tree
-        eix-sync || emerge --sync
+        $NICE_CMD eix-sync || $NICE_CMD emerge --sync
         [ 0 -ne $? ] && echo "Stage $STAGE: portage tree synchronization failed ;-( =======" && exit $STAGE
 
 	# Update metadata cache
 	in_list "$EGENCACHE" ${TRUE_LIST[@]} &&
 	if [[ "git" == "$SYNC_TYPE" ]]; then
 		echo "---------- Updating metadata cache for Git portage tree ----------"
-		egencache --repo=gentoo --update --jobs=$((`grep "^processor" /proc/cpuinfo -c`+1))
+		$NICE_CMD egencache --repo=gentoo --update --jobs=$((`grep "^processor" /proc/cpuinfo -c`+1))
         	[ 0 -ne $? ] && echo "Stage $STAGE: Metadata update failed ;-( =======" && exit $STAGE
         fi
 
@@ -122,19 +123,19 @@ if [ 1 -eq $STAGE ]; then
 
         # eix update
         if [ `which eix-update 2>/dev/null` ]; then
-                eix-update
+                $NICE_CMD eix-update
                 [ 0 -ne $? ] && echo "Stage $STAGE: eix-update failed ;-( =======" && exit $STAGE
         fi
 
         # eix-remote update
         if [ `which eix-remote 2>/dev/null` ]; then
-                eix-remote update
+                $NICE_CMD eix-remote update
                 [ 0 -ne $? ] && echo "Stage $STAGE: eix-remote update failed ;-( =======" && exit $STAGE
         fi
 
         # layman syncronization
         if [ `which layman 2>/dev/null` ]; then
-                layman -S
+                $NICE_CMD layman -S
                 [ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
         fi
 
@@ -163,7 +164,7 @@ fi
 if [ 3 -eq $STAGE ]; then
         echo "======= STAGE $STAGE: disable prelink ======="
         if [ `which prelink 2>/dev/null` ]; then
-                prelink -ua 2>/dev/null
+                $NICE_CMD prelink -ua 2>/dev/null
                 [ 0 -ne $? ] && echo "Stage $STAGE: prelink disabling failed ;-( =======" && exit $STAGE
         fi
 
@@ -312,7 +313,7 @@ if [ 11 -eq $STAGE ]; then
 		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
 		eselect python set $new_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
-		python-updater
+		$NICE_CMD python-updater
 		[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
 		rm /etc/portage/need_upgrade_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
@@ -360,16 +361,16 @@ if [ 14 -eq $STAGE ]; then
         emerge -c
         [ 0 -ne $? ] && echo "Stage $STAGE: emerge -c failed ;-( =======" && exit $STAGE
         if [ `which localepurge 2>/dev/null` ]; then
-                localepurge &>/dev/null
+                $NICE_CMD localepurge &>/dev/null
                 [ 0 -ne $? ] && echo "Stage $STAGE: localepurge failed ;-( =======" && exit $STAGE
         fi
         if [ `which eclean 2>/dev/null` ]; then
-                eclean packages
+                $NICE_CMD eclean packages
                 [ 0 -ne $? ] && echo "Stage $STAGE: eclean packages failed ;-( =======" && exit $STAGE
 
                 in_list "$ECLEAN_DISTFILES" ${TRUE_LIST[@]}
                 if [ 0 -eq $? ]; then
-                        eclean distfiles
+                        $NICE_CMD eclean distfiles
                         [ 0 -ne $? ] && echo "Stage $STAGE: eclean distfiles failed ;-( =======" && exit $STAGE
                 fi
         fi
@@ -392,7 +393,7 @@ fi
 if [ 16 -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Scan for vulnearable packages ======="
         if [ `which glsa-check 2>/dev/null` ]; then
-                glsa-check -f affected
+                $NICE_CMD glsa-check -f affected
                 # [ 0 -ne $? ] && echo "Stage $STAGE: glsa-check fix failed ;-( =======" && exit $STAGE
         fi
 
@@ -405,7 +406,7 @@ fi
 if [ 17 -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Prelink libraries ======="
         if [ `which prelink 2>/dev/null` ]; then
-                prelink -avfmR
+                $NICE_CMD prelink -avfmR
                 [ 0 -ne $? ] && echo "Stage $STAGE: prelink -avfmR failed ;-( =======" && exit $STAGE
         fi
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SILENT=false
+NICE_CMD=nice -n 19 ionice -c2 -n7
 
 # available parameters
 eval set -- "`getopt -o hs --long help,silent -- \"$@\"`"
@@ -45,22 +46,22 @@ fi
 grep 'CONFIG_X86_MARCH_NATIVE=y' .config &>/dev/null
 jobs=$((`grep "^processor" /proc/cpuinfo -c`+1))
 if [[ "$?" == 0 ]]; then
-	make -j$jobs
+	$NICE_CMD make -j$jobs
 	[ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
 else
 	# pump make -j$((jobs*3)) || make -j$jobs
-	make -j$jobs
+	$NICE_CMD make -j$jobs
 	[ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
 fi
 
 mount -o remount,rw /boot
 
-make install
-make modules_install
+$NICE_CMD make install
+$NICE_CMD make modules_install
 
 REVISION=`cat /usr/src/linux/include/config/kernel.release`
 
-which dracut &>/dev/null && dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
+which dracut &>/dev/null && $NICE_CMD dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
 
 sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
         s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
