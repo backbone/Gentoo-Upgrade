@@ -54,6 +54,7 @@ else
 	[ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
 fi
 
+echo "remounting /boot -> rw"
 mount -o remount,rw /boot
 
 $NICE_CMD make install
@@ -67,6 +68,7 @@ sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
         s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
         /boot/grub/grub.conf
 
+echo "remounting /boot -> ro"
 mount -o remount,ro /boot
 
 echo "--------- Rebuilding kernel modules ---------"

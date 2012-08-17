@@ -49,6 +49,7 @@ FALSE_LIST=(FALSE False false NO No no 0)
 if [ 0 -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems ro->rw ======="
 	for fs in $RW_REMOUNT; do
+		echo "remounting $fs -> rw"
 		mount -o remount,rw $fs
 		[ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,rw $fs failed ;-( =======" && exit $STAGE
 	done
@@ -435,6 +436,7 @@ fi
 if [ 20 -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems rw->ro ======="
 	for fs in $RO_REMOUNT; do
+		echo "remounting $fs -> ro"
 		mount -f -o remount,ro $fs
 	        [ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,ro $fs failed ;-( =======" && exit $STAGE
 	done
