@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SILENT=false
-NICE_CMD="nice -n 19 ionice -c2 -n7"
+NICE_CMD="nice -n 19 ionice -c2"
 
 # available parameters
 eval set -- "`getopt -o hs --long help,silent -- \"$@\"`"

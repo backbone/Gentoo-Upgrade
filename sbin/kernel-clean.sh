@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NICE_CMD="nice -n 19 ionice -c2 -n7"
+NICE_CMD="nice -n 19 ionice -c2"
 
 REVISION=`kernel-config list | grep \*$ | cut -d" " -f6 | cut -d- -f2-8`
 [ "" == "$REVISION" ] && echo "No appropriate kernel revision found ;-(" && exit -1
