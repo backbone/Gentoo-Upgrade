@@ -330,7 +330,7 @@ fi
 if [ 12 -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -uDNqv --with-bdeps=y @world
+        emerge -uDNqv @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
         echo '------- Scanning for missed shared libraries -------'
 
