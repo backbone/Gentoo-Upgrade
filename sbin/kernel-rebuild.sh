@@ -31,7 +31,7 @@ cd /usr/src/linux
 [ "$?" != "0" ] && echo /usr/src/linux doesn\'t exist && exit -1
 
 zcat $CONFIG_FILE >.config 2>/dev/null || cat $CONFIG_FILE >.config
-[ "$?" != "0" ] && echo $CONFIG_FILE doesn\'t exist && exit -1
+[ "$?" != "0" ] && echo "$CONFIG_FILE doesn't exist or /usr mounted as read-only" && exit -1
 
 if [ true == "$SILENT" ]; then
         yes "" | make silentoldconfig
