@@ -16,9 +16,9 @@ case $1 in
       /boot/grub/grub.conf && \
     echo "remounting /boot -> ro" && \
     mount -o remount,ro /boot && \
-    echo -e "#/bin/bash\n\n/usr/sbin/e4rat-finalize.sh && rm -f /etc/local.d/e4rat-finalize.start\n" \
-      > /etc/local.d/e4rat-finalize.start && \
-    chmod 755 /etc/local.d/e4rat-finalize.start
+    echo -e "#/bin/bash\n\n(/usr/sbin/e4rat_finalize.sh && rm -f /etc/local.d/e4rat_finalize.start)&\n" \
+      > /etc/local.d/e4rat_finalize.start && \
+    chmod 755 /etc/local.d/e4rat_finalize.start
     [ 0 -ne $? ] && echo "e4rat_switch.sh $1 failed" && exit -1
     ;;
   preload)
