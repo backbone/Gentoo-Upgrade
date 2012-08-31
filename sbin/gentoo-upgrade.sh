@@ -444,4 +444,11 @@ if [ 20 -eq $STAGE ]; then
 	let STAGE++
 fi
 
+# Stage 21: Enabling e4rat data collection
+if [ 21 -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Enabling e4rat data collection ======="
+	e4rat_switch.sh collect
+	[ 0 -ne $? ] && echo "Stage $STAGE: Enabling e4rat data collection failed ;-( =======" && exit $STAGE
+
+	let STAGE++
 exit 0
