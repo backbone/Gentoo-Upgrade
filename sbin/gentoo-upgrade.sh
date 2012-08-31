@@ -451,4 +451,5 @@ if [ 21 -eq $STAGE ]; then
 	[ 0 -ne $? ] && echo "Stage $STAGE: Enabling e4rat data collection failed ;-( =======" && exit $STAGE
 
 	let STAGE++
+fi
 exit 0
