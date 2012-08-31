@@ -2,6 +2,7 @@
 
 let timeout=0`grep --color=NO '^[ \t]*timeout' /etc/e4rat.conf | head -n1 | sed 's~[^0-9]\+\([0-9]\+\).*~\1~'`
 
+[ 0 -eq $timeout ] && timeout=120
 sleep $timeout
 
 e4rat-collect -k
