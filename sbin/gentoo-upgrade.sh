@@ -250,7 +250,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
         # skip next toolchain upgrade stages
         else
-                let STAGE=10
+                let STAGE+=5
         fi
 fi
 let STAGE_CNT++
