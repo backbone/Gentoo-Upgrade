@@ -59,6 +59,17 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
+# Pull portage config changes
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: pull portage config changes ======="
+	[ -d /etc/portage/.git ] && cd /etc/portage && git pull
+	[ 0 -ne $? ] && echo "Stage $STAGE: cd /etc/portage && git pull failed ;-( =======" && exit $STAGE
+
+	let STAGE++
+fi
+let STAGE_CNT++
+
+
 # sync portage tree
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: sync portage tree ======="
