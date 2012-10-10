@@ -44,9 +44,10 @@ function in_list()
 
 TRUE_LIST=(TRUE True true YES Yes yes 1)
 FALSE_LIST=(FALSE False false NO No no 0)
+STAGE_CNT=0
 
-# Stage 0: remounting file systems ro->rw
-if [ 0 -eq $STAGE ]; then
+# remounting file systems ro->rw
+if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems ro->rw ======="
 	for fs in $RW_REMOUNT; do
 		echo "remounting $fs -> rw"
@@ -56,9 +57,10 @@ if [ 0 -eq $STAGE ]; then
 
 	let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 1: sync portage tree
-if [ 1 -eq $STAGE ]; then
+# sync portage tree
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: sync portage tree ======="
 	SYNC_TYPE=
 	expr match "$SYNC" "git://" >/dev/null && SYNC_TYPE=git
@@ -151,18 +153,20 @@ if [ 1 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 2: upgrading portage package
-if [ 2 -eq $STAGE ]; then
+# upgrading portage package
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: upgrading portage package ======="
         emerge -uq1v portage
         [ 0 -ne $? ] && echo "Stage $STAGE: portage package upgrading failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 3: disable prelink
-if [ 3 -eq $STAGE ]; then
+# disable prelink
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: disable prelink ======="
         if [ `which prelink 2>/dev/null` ]; then
                 $NICE_CMD prelink -ua 2>/dev/null
@@ -171,9 +175,10 @@ if [ 3 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 4: Test for necessity to upgrade toolchain packages
-if [ 4 -eq $STAGE ]; then
+# Test for necessity to upgrade toolchain packages
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Test for necessity to upgrade toolchain packages ======="
         cur_gcc_ver=`qlist -ICve sys-devel/gcc | sed 's~.*/gcc-~~'`
         new_gcc_ver=`emerge -uNp sys-devel/gcc | grep '^\[' | sed 's~.*/gcc-~~ ; s~\ .*~~'`
@@ -190,9 +195,10 @@ if [ 4 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 5: Toolchain packages rebuild and possibly 1'th full toolchain rebuild
-if [ 5 -eq $STAGE ]; then
+# Toolchain packages rebuild and possibly 1'th full toolchain rebuild
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: 1'th toolchain build ======="
 
         if [ -f /etc/portage/need_libtool_rebuild ]; then
@@ -225,9 +231,10 @@ if [ 5 -eq $STAGE ]; then
                 let STAGE=10
         fi
 fi
+let STAGE_CNT++
 
-# Stage 6: switching gcc and binutils
-if [ 6 -eq $STAGE ]; then
+# switching gcc and binutils
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: switching gcc and binutils ======="
         gcc_regex=`gcc-config -c | sed 's~[0-9]*\.[0-9]*\.[0-9]*~[0-9]*\.[0-9]*\.[0-9]*~'`
         [ "" == "$gcc_regex" ] && echo "Stage $STAGE: failed to build gcc_regex ;-( =======" && exit $STAGE
@@ -244,9 +251,10 @@ if [ 6 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 7: 2'nd toolchain build
-if [ 7 -eq $STAGE ]; then
+# 2'nd toolchain build
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: 2'nd toolchain build ======="
         source /etc/profile
         emerge -1bvq sys-libs/glibc sys-devel/binutils sys-devel/gcc sys-apps/portage
@@ -254,9 +262,10 @@ if [ 7 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 8: rebuild @system
-if [ 8 -eq $STAGE ]; then
+# rebuild @system
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @system ======="
         source /etc/profile
         emerge -1bkevq @system
@@ -264,9 +273,10 @@ if [ 8 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 9: rebuild @world
-if [ 9 -eq $STAGE ]; then
+# rebuild @world
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @world ======="
         source /etc/profile
         emerge -1bkevq @world
@@ -274,9 +284,10 @@ if [ 9 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 10: @system upgrade
-if [ 10 -eq $STAGE ]; then
+# @system upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
 
         echo 'Test and remember if we should run python-updater after @system upgrade'
@@ -290,9 +301,10 @@ if [ 10 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 11: Python upgrade
-if [ 11 -eq $STAGE ]; then
+# Python upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Python upgrade ======="
 	available_python_list=`eselect python list | cut -d" " -f6 | grep -v ^$ | sort -rV`
 	[ "" == "$available_python_list" ] && echo "Stage $STAGE: empty available_python_list ;-( =======" && exit $STAGE
@@ -324,10 +336,11 @@ if [ 11 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
 
-# Stage 12: @world upgrade
-if [ 12 -eq $STAGE ]; then
+# @world upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
         emerge -uDNqv @world
@@ -336,9 +349,10 @@ if [ 12 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 13: Xorg server upgrades
-if [ 13 -eq $STAGE ]; then
+# Xorg server upgrades
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Xorg server upgrades ======="
         if [ -f /etc/portage/need_upgrade_xorg_input_drivers ]; then
                 echo '------- Upgrading Xorg input drivers -------'
@@ -355,9 +369,10 @@ if [ 13 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 14: Cleaning
-if [ 14 -eq $STAGE ]; then
+# Cleaning
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Cleaning ======="
         emerge -c
         [ 0 -ne $? ] && echo "Stage $STAGE: emerge -c failed ;-( =======" && exit $STAGE
@@ -380,18 +395,20 @@ if [ 14 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 15: Scan for missed shared libraries
-if [ 15 -eq $STAGE ]; then
+# Scan for missed shared libraries
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Scan for old versions of shared libraries ======="
         emerge -1qv @preserved-rebuild
         [ 0 -ne $? ] && echo "Stage $STAGE: emerge -1qv @preserved-rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 16: Scan for vulnearable packages and try to fix them
-if [ 16 -eq $STAGE ]; then
+# Scan for vulnearable packages and try to fix them
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Scan for vulnearable packages ======="
         if [ `which glsa-check 2>/dev/null` ]; then
                 $NICE_CMD glsa-check -f affected
@@ -402,9 +419,10 @@ if [ 16 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 17: Prelink libraries
-if [ 17 -eq $STAGE ]; then
+# Prelink libraries
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Prelink libraries ======="
         if [ `which prelink 2>/dev/null` ]; then
                 $NICE_CMD prelink -avfmR
@@ -413,27 +431,30 @@ if [ 17 -eq $STAGE ]; then
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 18: Upgrade kernel
-if [ 18 -eq $STAGE ]; then
+# Upgrade kernel
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Upgrade kernel ======="
 	kernel-getlast.sh
         [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh failed ;-( =======" && exit $STAGE
 
 	let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 19: Update config files
-if [ 19 -eq $STAGE ]; then
+# Update config files
+if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Update config files ======="
         etc-update
         [ 0 -ne $? ] && echo "Stage $STAGE: etc-update failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 20: remounting file systems rw->ro
-if [ 20 -eq $STAGE ]; then
+# remounting file systems rw->ro
+if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems rw->ro ======="
 	for fs in $RO_REMOUNT; do
 		echo "remounting $fs -> ro"
@@ -443,13 +464,16 @@ if [ 20 -eq $STAGE ]; then
 
 	let STAGE++
 fi
+let STAGE_CNT++
 
-# Stage 21: Enabling e4rat data collection
-if [ 21 -eq $STAGE ]; then
+# Enabling e4rat data collection
+if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: Enabling e4rat data collection ======="
 	e4rat_switch.sh collect
 	[ 0 -ne $? ] && echo "Stage $STAGE: Enabling e4rat data collection failed ;-( =======" && exit $STAGE
 
 	let STAGE++
 fi
+let STAGE_CNT++
+
 exit 0
