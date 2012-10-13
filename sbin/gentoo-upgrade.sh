@@ -61,9 +61,11 @@ let STAGE_CNT++
 
 # Pull portage config changes
 if [ $STAGE_CNT -eq $STAGE ]; then
-	echo "======= STAGE $STAGE: pull portage config changes ======="
-	[ -d /etc/portage/.git ] && cd /etc/portage && git pull
-	[ 0 -ne $? ] && echo "Stage $STAGE: cd /etc/portage && git pull failed ;-( =======" && exit $STAGE
+	if [ -d /etc/portage/.git ]; then
+		echo "======= STAGE $STAGE: pull portage config changes ======="
+		cd /etc/portage && git pull
+		[ 0 -ne $? ] && echo "Stage $STAGE: cd /etc/portage && git pull failed ;-( =======" && exit $STAGE
+	fi
 
 	let STAGE++
 fi
