@@ -63,8 +63,8 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
 	if [ -d /etc/portage/.git ]; then
 		echo "======= STAGE $STAGE: pull portage config changes ======="
-		cd /etc/portage && git pull
-		[ 0 -ne $? ] && echo "Stage $STAGE: cd /etc/portage && git pull failed ;-( =======" && exit $STAGE
+		cd /etc/portage && git pull origin `git rev-parse --abbrev-ref HEAD`
+		[ 0 -ne $? ] && echo "Stage $STAGE: cd /etc/portage && git pull origin `git rev-parse --abbrev-ref HEAD` failed ;-( =======" && exit $STAGE
 	fi
 
 	let STAGE++
