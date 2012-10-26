@@ -3,6 +3,8 @@
 SILENT=false
 NICE_CMD="nice -n 19 ionice -c2"
 
+[ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
+
 # available parameters
 eval set -- "`getopt -o hs --long help,silent -- \"$@\"`"
 
@@ -26,6 +28,15 @@ done
 
 CONFIG_FILE=/proc/config.gz
 [ "$1" != "" ] && CONFIG_FILE=$1
+
+# remounting file systems ro->rw
+for fs in $RW_REMOUNT; do
+	if [[ "$fs" =~ "^/+usr/*$" || "$fs" =~ "^/+boot/*$" ]]; then
+		echo "remounting $fs -> rw"
+		mount -o remount,rw $fs
+		[ 0 -ne $? ] && echo "mount -o remount,rw $fs failed ;-( =======" && exit -1
+	fi
+done
 
 cd /usr/src/linux
 [ "$?" != "0" ] && echo /usr/src/linux doesn\'t exist && exit -1
@@ -54,9 +65,6 @@ else
 	[ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
 fi
 
-echo "remounting /boot -> rw"
-mount -o remount,rw /boot
-
 $NICE_CMD make install
 $NICE_CMD make modules_install
 
@@ -68,14 +76,20 @@ sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
         s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
         /boot/grub/grub.conf
 
-echo "remounting /boot -> ro"
-mount -o remount,ro /boot
-
 echo "--------- Rebuilding kernel modules ---------"
 emerge -1qv @module-rebuild
 [ 0 -ne $? ] && echo "Upgrading kernel modules failed ;-(" && exit -1
 
 cd $pwdtmp 
+
+# remounting file systems rw->ro
+for fs in $RO_REMOUNT; do
+	if [[ "$fs" =~ "^/+usr/*$" || "$fs" =~ "^/+boot/*$" ]]; then
+		echo "remounting $fs -> ro"
+		mount -o remount,ro $fs
+		[ 0 -ne $? ] && echo "mount -o remount,ro $fs failed ;-( =======" && exit -1
+	fi
+done
 
 exit 0
 
