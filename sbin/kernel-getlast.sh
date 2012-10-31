@@ -6,6 +6,15 @@ kernel_regex=`kernel-config list | grep \* | cut -d" " -f6  | sed 's~[0-9]*\.[0-
 new_kernel=`kernel-config list | cut -d" " -f6 | grep ^$kernel_regex$ | sort -V | tail -n1`
 [ "" == "$new_kernel" ] && echo "Couldn't find appropriate new kernel version ;-(" && exit -1
 
+# remounting file systems ro->rw
+for fs in $RW_REMOUNT; do
+	if [[ "$fs" =~ ^/+usr/*$ || "$fs" =~ ^/+boot/*$ ]]; then
+		echo "remounting $fs -> rw"
+		mount -o remount,rw $fs
+		[ 0 -ne $? ] && echo "mount -o remount,rw $fs failed ;-( =======" && exit -1
+	fi
+done
+
 kernel-config set $new_kernel
 [ 0 -ne $? ] && echo "kernel-config set $new_kernel failed ;-(" && exit -1
 
@@ -19,6 +28,15 @@ if [ ! -f "$vmlinuz_file" ]; then
 	kernel-rebuild.sh
 	[ 0 -ne $? ] && echo "kernel-rebuild.sh failed" && exit -1
 fi
+
+# remounting file systems rw->ro
+for fs in $RO_REMOUNT; do
+	if [[ "$fs" =~ ^/+usr/*$ || "$fs" =~ ^/+boot/*$ ]]; then
+		echo "remounting $fs -> ro"
+		mount -o remount,ro $fs
+		[ 0 -ne $? ] && echo "mount -o remount,ro $fs failed ;-( =======" && exit -1
+	fi
+done
 
 exit 0
 

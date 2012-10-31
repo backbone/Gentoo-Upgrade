@@ -31,7 +31,7 @@ CONFIG_FILE=/proc/config.gz
 
 # remounting file systems ro->rw
 for fs in $RW_REMOUNT; do
-	if [[ "$fs" =~ "^/+usr/*$" || "$fs" =~ "^/+boot/*$" ]]; then
+	if [[ "$fs" =~ ^/+usr/*$ || "$fs" =~ ^/+boot/*$ ]]; then
 		echo "remounting $fs -> rw"
 		mount -o remount,rw $fs
 		[ 0 -ne $? ] && echo "mount -o remount,rw $fs failed ;-( =======" && exit -1
@@ -84,10 +84,10 @@ cd $pwdtmp
 
 # remounting file systems rw->ro
 for fs in $RO_REMOUNT; do
-	if [[ "$fs" =~ "^/+usr/*$" || "$fs" =~ "^/+boot/*$" ]]; then
+	if [[ "$fs" =~ ^/+usr/*$ || "$fs" =~ ^/+boot/*$ ]]; then
 		echo "remounting $fs -> ro"
-		mount -o remount,ro $fs
-		[ 0 -ne $? ] && echo "mount -o remount,ro $fs failed ;-( =======" && exit -1
+		mount -f -o remount,ro $fs
+		[ 0 -ne $? ] && echo "mount -f -o remount,ro $fs failed ;-( =======" && exit -1
 	fi
 done
 
