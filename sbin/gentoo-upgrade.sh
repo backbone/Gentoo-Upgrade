@@ -369,7 +369,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo 'Looking for necessity to upgrade @world packages...'
         emerge -uDNqv @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
-        echo '------- Scanning for missed shared libraries -------'
 
         let STAGE++
 fi
@@ -390,6 +389,16 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         else
         	echo '------- No Xorg server upgrades! -------'
         fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
+# Upgrading live packages
+if [ $STAGE_CNT -eq $STAGE ]; then
+        echo "======= STAGE $STAGE: Upgrading live packages ======="
+        smart-live-rebuild
+        [ 0 -ne $? ] && echo "Stage $STAGE: Upgrading live packages failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
