@@ -130,6 +130,12 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         	done
 	fi
 
+        # layman syncronization
+        if [ `which layman 2>/dev/null` ]; then
+                $NICE_CMD layman -S
+                [ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
+        fi
+
         # sync portage tree
         $NICE_CMD eix-sync || $NICE_CMD emerge --sync
         [ 0 -ne $? ] && echo "Stage $STAGE: portage tree synchronization failed ;-( =======" && exit $STAGE
@@ -147,12 +153,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		echo -n > /etc/portage/rsync.excludes
         	[ 0 -ne $? ] && echo "Stage $STAGE: failed to clear /etc/portage/rsync.excludes ;-( =======" && exit $STAGE
 	fi
-
-        # layman syncronization
-        if [ `which layman 2>/dev/null` ]; then
-                $NICE_CMD layman -S
-                [ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
-        fi
 
         # eix update
         if [ `which eix-update 2>/dev/null` ]; then
