@@ -72,9 +72,12 @@ REVISION=`cat /usr/src/linux/include/config/kernel.release`
 
 which dracut &>/dev/null && $NICE_CMD dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
 
+[ -f /boot/grub/grub.conf ] && \
 sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
         s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
         /boot/grub/grub.conf
+
+[ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
 
 echo "--------- Rebuilding kernel modules ---------"
 emerge -1qv @module-rebuild
