@@ -414,13 +414,13 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                 [ 0 -ne $? ] && echo "Stage $STAGE: localepurge failed ;-( =======" && exit $STAGE
         fi
         if [ `which eclean 2>/dev/null` ]; then
-                $NICE_CMD eclean packages
-                [ 0 -ne $? ] && echo "Stage $STAGE: eclean packages failed ;-( =======" && exit $STAGE
+                $NICE_CMD eclean -d packages
+                [ 0 -ne $? ] && echo "Stage $STAGE: eclean -d packages failed ;-( =======" && exit $STAGE
 
                 in_list "$ECLEAN_DISTFILES" ${TRUE_LIST[@]}
                 if [ 0 -eq $? ]; then
-                        $NICE_CMD eclean distfiles
-                        [ 0 -ne $? ] && echo "Stage $STAGE: eclean distfiles failed ;-( =======" && exit $STAGE
+                        $NICE_CMD eclean -d distfiles
+                        [ 0 -ne $? ] && echo "Stage $STAGE: eclean -d distfiles failed ;-( =======" && exit $STAGE
                 fi
         fi
         rm -rf /var/tmp/portage/*
