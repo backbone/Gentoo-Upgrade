@@ -476,7 +476,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Upgrade kernel ======="
 
         if [ -f /etc/portage/need_kernel_rebuild ]; then
-                kernel-getlast.sh --force-rebuild
+                kernel-getlast.sh --force-rebuild --mrproper
                 [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh --force-rebuild failed ;-( =======" && exit $STAGE
                 rm /etc/portage/need_kernel_rebuild
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_kernel_rebuild ;-( =======" && exit $STAGE

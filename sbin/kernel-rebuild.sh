@@ -1,12 +1,13 @@
 #!/bin/bash
 
 SILENT=false
+MRPROPER=false
 NICE_CMD="nice -n 19 ionice -c2"
 
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
 
 # available parameters
-eval set -- "`getopt -o hs --long help,silent -- \"$@\"`"
+eval set -- "`getopt -o hs --long help,silent,mrproper -- \"$@\"`"
 
 while true ; do
         case "$1" in
@@ -15,12 +16,14 @@ while true ; do
                         echo "Keys:"
                         echo -e "-h, --help\tShow this help and exit."
                         echo -e "-s, --silent \tMake with silentoldconfig."
+                        echo -e "--mrproper\tClean kernel sources before rebuild."
                         echo
                         echo -e "This program works on any GNU/Linux with GNU Baurne's shell"
                         echo -e "Report bugs to <mecareful@gmail.com>"
                         exit 0
                         ;;
 		-s|--silent) SILENT=true ; shift ;;
+		--mrproper) MRPROPER=true ; shift ;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit -1 ;;
         esac
@@ -40,6 +43,11 @@ done
 
 cd /usr/src/linux
 [ "$?" != "0" ] && echo /usr/src/linux doesn\'t exist && exit -1
+
+if [ true == "$MRPROPER" ]; then
+        make clean && make mrproper
+        [ 0 -ne $? ] && echo "make clean && make mrproper failed ;-( =======" && exit -1
+fi
 
 zcat $CONFIG_FILE >.config 2>/dev/null || cat $CONFIG_FILE >.config
 [ "$?" != "0" ] && echo "$CONFIG_FILE doesn't exist or /usr mounted as read-only" && exit -1

@@ -1,9 +1,10 @@
 #!/bin/bash
 
 let FORCE_REBUILD=0
+KERNEL_REBUILD_ARGS=""
 
 # available parameters
-eval set -- "`getopt -o h --long help,force-rebuild -- \"$@\"`"
+eval set -- "`getopt -o h --long help,force-rebuild,mrproper -- \"$@\"`"
 
 while true ; do
         case "$1" in
@@ -12,12 +13,14 @@ while true ; do
                         echo "Keys:"
                         echo -e "-h, --help\t\t\tShow this help and exit."
                         echo -e "--force-rebuild\t\t\tForce to rebuild kernel even if no new versions found."
+                        echo -e "--mrproper\t\t\tClean kernel sources before rebuild."
                         echo
                         echo -e "This program works on any GNU/Linux with GNU Baurne's shell"
                         echo -e "Report bugs to <mecareful@gmail.com>"
                         exit 0
                         ;;
-                --force-rebuild) let FORCE_REBUILD=1 ; shift 1 ;;
+                --force-rebuild) let FORCE_REBUILD=1 ; shift ;;
+                --mrproper) KERNEL_REBUILD_ARGS="$KERNEL_REBUILD_ARGS --mrproper" ; shift ;;
                 --) shift ; break ;;
                 *) echo "Internal error!" ; exit -1 ;;
         esac
@@ -47,9 +50,10 @@ kernel-clean.sh
 vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`
 [ "" == "$vmlinuz_file" ] && echo "vmlinuz_file == \"\"" && exit -1
 
+
 if [[ ! -f "$vmlinuz_file" || 1 -eq $FORCE_REBUILD ]]; then
-	kernel-rebuild.sh
-	[ 0 -ne $? ] && echo "kernel-rebuild.sh failed" && exit -1
+	kernel-rebuild.sh $KERNEL_REBUILD_ARGS
+	[ 0 -ne $? ] && echo "kernel-rebuild.sh $KERNEL_REBUILD_ARGS failed" && exit -1
 fi
 
 # remounting file systems rw->ro
