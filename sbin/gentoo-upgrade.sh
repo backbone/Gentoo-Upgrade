@@ -242,8 +242,8 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                 install -d -o portage -g portage -m775 $pkgdir
 
                 # first toolchain build
-                emerge -1vq sys-kernel/linux-headers sys-libs/glibc sys-devel/binutils \
-                          sys-devel/gcc-config sys-devel/gcc sys-devel/binutils-config
+                emerge -1uvq sys-kernel/linux-headers sys-libs/glibc sys-devel/binutils \
+                          sys-devel/gcc-config sys-devel/gcc sys-devel/binutils-config sys-devel/libtool
                 [ 0 -ne $? ] && echo "Stage $STAGE: 1'th toolchain build failed ;-( =======" && exit $STAGE
                 rm /etc/portage/need_toolchain_rebuild
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_toolchain_rebuild ;-( =======" && exit $STAGE
