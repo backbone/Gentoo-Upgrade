@@ -208,6 +208,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         new_gcc_ver=`emerge -uNp sys-devel/gcc | grep '^\[' | sed 's~.*/gcc-~~ ; s~\ .*~~'`
         if [[ "" != "$new_gcc_ver" && "`echo $cur_gcc_ver | sed 's~\([0-9]*\.[0-9]*\).*~\1~'`" != "`echo $new_gcc_ver | sed 's~\([0-9]*\.[0-9]*\).*~\1~'`" ]]; then
                 touch /etc/portage/need_toolchain_rebuild
+                touch /etc/portage/need_kernel_rebuild
         else
                 if [ "`echo $cur_gcc_ver | sed 's~[0-9]*\.[0-9]*\.\([0-9]*\).*~\1~'`" != "`echo $cur_gcc_ver | sed 's~[0-9]*\.[0-9]*\.\([0-9]*\).*~\1~'`" ]; then
                         touch /etc/portage/need_libtool_rebuild
@@ -469,8 +470,16 @@ let STAGE_CNT++
 # Upgrade kernel
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Upgrade kernel ======="
-	kernel-getlast.sh
-        [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh failed ;-( =======" && exit $STAGE
+
+        if [ -f /etc/portage/need_kernel_rebuild ]; then
+                kernel-getlast.sh --force-rebuild
+                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh --force-rebuild failed ;-( =======" && exit $STAGE
+                rm /etc/portage/need_kernel_rebuild
+                [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_kernel_rebuild ;-( =======" && exit $STAGE
+        else
+                kernel-getlast.sh
+                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh failed ;-( =======" && exit $STAGE
+        fi
 
 	let STAGE++
 fi
