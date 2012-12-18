@@ -79,6 +79,10 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                 [ 0 -ne $? ] && echo "Stage $STAGE: Updating gentoo-upgrade script failed ;-( =======" && exit $STAGE
         fi
 
+        exec $0 -s $((STAGE+1))
+
+        echo "Stage $STAGE: Bash translator in unreachable code ;-(" && exit $STAGE
+
 	let STAGE++
 fi
 let STAGE_CNT++
