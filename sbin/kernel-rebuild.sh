@@ -3,34 +3,34 @@
 SILENT=false
 MRPROPER=false
 NICE_CMD="nice -n 19 ionice -c2"
+CONFIG_FILE=/proc/config.gz
 
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
 
 # available parameters
-eval set -- "`getopt -o hs --long help,silent,mrproper -- \"$@\"`"
+eval set -- "`getopt -o hsc: --long help,silent,mrproper,config: -- \"$@\"`"
 
 while true ; do
         case "$1" in
                 -h|--help)
                         echo "Usage: kernel-rebuild.sh [keys]..."
                         echo "Keys:"
-                        echo -e "-h, --help\tShow this help and exit."
-                        echo -e "-s, --silent \tMake with silentoldconfig."
-                        echo -e "--mrproper\tClean kernel sources before rebuild."
+                        echo -e "-h, --help\t\tShow this help and exit."
+                        echo -e "-s, --silent\t\tMake with silentoldconfig."
+                        echo -e "--mrproper\t\tClean kernel sources before rebuild."
+                        echo -e "-c, --config [CONFIG]\tPath to custom kernel config."
                         echo
                         echo -e "This program works on any GNU/Linux with GNU Baurne's shell"
                         echo -e "Report bugs to <mecareful@gmail.com>"
                         exit 0
                         ;;
-		-s|--silent) SILENT=true ; shift ;;
-		--mrproper) MRPROPER=true ; shift ;;
+                -s|--silent) SILENT=true ; shift ;;
+                --mrproper) MRPROPER=true ; shift ;;
+                -c|--config) CONFIG_FILE=$2 ; shift 2 ;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit -1 ;;
         esac
 done
-
-CONFIG_FILE=/proc/config.gz
-[ "$1" != "" ] && CONFIG_FILE=$1
 
 # remounting file systems ro->rw
 for fs in $RW_REMOUNT; do
@@ -48,7 +48,7 @@ if [ true == "$MRPROPER" ]; then
         make clean && make mrproper
         [ 0 -ne $? ] && echo "make clean && make mrproper failed ;-( =======" && exit -1
 fi
-
+echo CONFIG_FILE=$CONFIG_FILE
 zcat $CONFIG_FILE >.config 2>/dev/null || cat $CONFIG_FILE >.config
 [ "$?" != "0" ] && echo "$CONFIG_FILE doesn't exist or /usr mounted as read-only" && exit -1
 
