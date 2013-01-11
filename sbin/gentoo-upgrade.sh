@@ -324,6 +324,16 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	        touch /etc/portage/need_upgrade_python
         fi
 
+        echo 'Test and remember if we should run perl-cleaner after @system upgrade'
+        if [ 0 -ne `emerge -uNp dev-lang/perl 2>&1 | grep '^\[' | wc -l` ]; then
+	        touch /etc/portage/need_upgrade_perl
+        fi
+
+        echo 'Test and remember if we should run haskell-updater after @system upgrade'
+        if [ 0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]; then
+	        touch /etc/portage/need_upgrade_haskell
+        fi
+
         echo '------- Upgrading @system packages -------'
         emerge -uDNqv --with-bdeps=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
@@ -352,13 +362,13 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	if [[ "$old_python" != "$new_python" || -f /etc/portage/need_upgrade_python ]]; then
 		echo "Running python-updater..."
 		touch /etc/portage/need_upgrade_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
+		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
 		eselect python set $new_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
 		$NICE_CMD python-updater
 		[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
 		rm /etc/portage/need_upgrade_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
+		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
 	else
 		echo "------- Not need to upgrade python -------"
 	fi
@@ -367,6 +377,41 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
+# Perl upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Perl upgrade ======="
+
+	if [ -f /etc/portage/need_upgrade_perl ]; then
+		echo "Running perl-cleaner..."
+		$NICE_CMD perl-cleaner --all
+		[ 0 != $? ] && echo "Stage $STAGE: perl-cleaner failed ;-( =======" && exit $STAGE
+		rm /etc/portage/need_upgrade_perl
+		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_perl ;-( =======" && exit $STAGE
+	else
+		echo "------- Not need to upgrade perl -------"
+	fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
+# Haskell upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Haskell upgrade ======="
+
+	if [ -f /etc/portage/need_upgrade_haskell ]; then
+		echo "Running haskell-updater..."
+		$NICE_CMD haskell-updater --upgrade
+		[ 0 != $? ] && echo "Stage $STAGE: haskell-updater --upgrade failed ;-( =======" && exit $STAGE
+		rm /etc/portage/need_upgrade_haskell
+		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_haskell ;-( =======" && exit $STAGE
+	else
+		echo "------- Not need to upgrade Haskell -------"
+	fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
 
 # @world upgrade
 if [ $STAGE_CNT -eq $STAGE ]; then
