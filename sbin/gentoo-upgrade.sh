@@ -384,13 +384,10 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Xorg server upgrades ======="
         if [ -f /etc/portage/need_upgrade_xorg_input_drivers ]; then
                 echo '------- Upgrading Xorg input drivers -------'
-                xorg_packages=`qlist -IC xf86-input xorg-drivers xf86-input-evdev xf86-input-wacom`
-	        if [ "" != "$xorg_packages" ]; then
-                        emerge -1qv $xorg_packages
-                        [ 0 -ne $? ] && echo "Stage $STAGE: Xorg input drivers upgrade failed ;-( =======" && exit $STAGE
-                        rm /etc/portage/need_upgrade_xorg_input_drivers
-                        [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
-                fi
+                emerge -1qv @x11-module-rebuild `qlist -IC xf86-input xorg-drivers`
+                [ 0 -ne $? ] && echo "Stage $STAGE: Xorg input drivers upgrade failed ;-( =======" && exit $STAGE
+                rm /etc/portage/need_upgrade_xorg_input_drivers
+                [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
         else
         	echo '------- No Xorg server upgrades! -------'
         fi
