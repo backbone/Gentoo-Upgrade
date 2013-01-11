@@ -564,4 +564,16 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
+# Collect data for file/package database
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Collect data for file/package database ======="
+        if [ `which pfl 2>/dev/null` ]; then
+		pfl
+		[ 0 -ne $? ] && echo "Stage $STAGE: Collect data for file/package database failed ;-( =======" && exit $STAGE
+        else
+		echo "app-portage/pfl is not installed ;-("
+        fi
+fi
+let STAGE_CNT++
+
 exit 0
