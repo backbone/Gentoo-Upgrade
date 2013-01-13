@@ -328,12 +328,14 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         fi
 
         echo 'Test and remember if we should run perl-cleaner after @system upgrade'
-        if [ 0 -ne `emerge -uNp dev-lang/perl 2>&1 | grep '^\[' | wc -l` ]; then
+        if [[ 0 -ne `qlist -IC dev-lang/perl | wc -l`
+              && 0 -ne `emerge -uNp dev-lang/perl 2>&1 | grep '^\[' | wc -l` ]]; then
 	        touch /etc/portage/need_upgrade_perl
         fi
 
         echo 'Test and remember if we should run haskell-updater after @system upgrade'
-        if [ 0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]; then
+        if [[ 0 -ne `qlist -IC dev-lang/ghc | wc -l`
+              &&  0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]]; then
 	        touch /etc/portage/need_upgrade_haskell
         fi
 
