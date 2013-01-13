@@ -2,12 +2,13 @@
 
 STAGE=0
 NICE_CMD="nice -n 19 ionice -c2"
+let QUIET=0
 
 source /etc/make.conf
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
 
 # available parameters
-eval set -- "`getopt -o hs: --long help,stage: -- \"$@\"`"
+eval set -- "`getopt -o hs:q --long help,stage:,quiet -- \"$@\"`"
 
 while true ; do
         case "$1" in
@@ -15,15 +16,17 @@ while true ; do
                         echo "Usage: upgrade-gentoo.sh [keys]..."
                         echo "Keys:"
                         echo -e "-h, --help\t\t\tShow this help and exit."
-                        echo -e "-s [STAGE], --stage [STAGE]\t Go to STAGE upgrade level."
+                        echo -e "-s [STAGE], --stage [STAGE]\tGo to STAGE upgrade level."
+                        echo -e "-q, --quiet\t\t\tMake kernel configuration non-interactive."
                         echo
                         echo -e "This program works on any GNU/Linux with GNU Baurne's shell"
                         echo -e "Report bugs to <mecareful@gmail.com>"
                         exit 0
                         ;;
 		-s|--stage) STAGE=$2 ; shift 2 ;;
-	--) shift ; break ;;
-	*) echo "Internal error!" ; exit -1 ;;
+		-q|--quiet) let QUIET=1 ; shift ;;
+		--) shift ; break ;;
+		*) echo "Internal error!" ; exit -1 ;;
         esac
 done
 
@@ -517,14 +520,16 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Upgrade kernel ======="
 
+        [ 1 -eq $QUIET ] && KERNEL_GETLAST_OPTS="$KERNEL_GETLAST_OPTS --quiet"
+
         if [ -f /etc/portage/need_kernel_rebuild ]; then
-                kernel-getlast.sh --force-rebuild --mrproper
-                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh --force-rebuild failed ;-( =======" && exit $STAGE
+                kernel-getlast.sh --force-rebuild --mrproper $KERNEL_GETLAST_OPTS
+                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh --force-rebuild $KERNEL_GETLAST_OPTS failed ;-( =======" && exit $STAGE
                 rm /etc/portage/need_kernel_rebuild
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_kernel_rebuild ;-( =======" && exit $STAGE
         else
-                kernel-getlast.sh
-                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh failed ;-( =======" && exit $STAGE
+                kernel-getlast.sh $KERNEL_GETLAST_OPTS
+                [ 0 -ne $? ] && echo "Stage $STAGE: kernel-getlast.sh $KERNEL_GETLAST_OPTS failed ;-( =======" && exit $STAGE
         fi
 
 	let STAGE++
