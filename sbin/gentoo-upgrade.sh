@@ -161,6 +161,12 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         	[ 0 -ne $? ] && echo "Stage $STAGE: failed to clear /etc/portage/rsync.excludes ;-( =======" && exit $STAGE
 	fi
 
+        # eix-remote update
+        if [ `which eix-remote 2>/dev/null` ]; then
+                $NICE_CMD eix-remote update
+                [ 0 -ne $? ] && echo "Stage $STAGE: 1'st eix-remote update failed ;-( =======" && exit $STAGE
+        fi
+
         # eix update
         if [ `which eix-update 2>/dev/null` ]; then
                 $NICE_CMD eix-update
@@ -170,7 +176,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         # eix-remote update
         if [ `which eix-remote 2>/dev/null` ]; then
                 $NICE_CMD eix-remote update
-                [ 0 -ne $? ] && echo "Stage $STAGE: eix-remote update failed ;-( =======" && exit $STAGE
+                [ 0 -ne $? ] && echo "Stage $STAGE: 2'nd eix-remote update failed ;-( =======" && exit $STAGE
         fi
 
         # remind to upgrade Xorg input drivers
