@@ -4,7 +4,8 @@ STAGE=0
 NICE_CMD="nice -n 19 ionice -c2"
 let QUIET=0
 
-source /etc/make.conf
+[ -f /etc/make.conf ] && source /etc/make.conf
+[ -f /etc/portage/make.conf ] && source /etc/portage/make.conf
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
 
 # available parameters
