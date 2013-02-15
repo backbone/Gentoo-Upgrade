@@ -60,6 +60,14 @@ else
         [ "$?" != "0" ] && echo "======= make menuconfig failed ;-( =======" && exit -1
 fi
 
+# aufs3 patches
+if [[ `qlist -IC sys-fs/aufs3 | wc -l` != 0 ]]; then
+	make modules_prepare
+	[ 0 -ne $? ] && echo "make modules_prepare failed ;-(" && exit -1
+	emerge -1 sys-fs/aufs3
+	[ 0 -ne $? ] && echo "emerge -1 sys-fs/aufs3 failed ;-(" && exit -1
+fi
+
 # disable distcc for -march=native -mtune=native
 
 grep 'CONFIG_X86_MARCH_NATIVE=y' .config &>/dev/null
