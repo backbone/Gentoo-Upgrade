@@ -190,6 +190,12 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         fi
 
         let STAGE++
+
+	# recreate portage squashfs files
+	if [[ -x /etc/init.d/squash_portage && "" != "`mount | grep '^aufs' | grep $PORTDIR`" ]]; then
+		/etc/init.d/squash_portage restart
+		[ 0 -ne $? ] && echo "Stage $STAGE: cann't restart squash_portage ;-( =======" && exit $STAGE
+	fi
 fi
 let STAGE_CNT++
 
