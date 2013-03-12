@@ -96,7 +96,7 @@ sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
 [ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
 
 echo "--------- Rebuilding kernel modules ---------"
-emerge -1qv @module-rebuild
+emerge -1v @module-rebuild
 [ 0 -ne $? ] && echo "Upgrading kernel modules failed ;-(" && exit -1
 
 cd $pwdtmp 

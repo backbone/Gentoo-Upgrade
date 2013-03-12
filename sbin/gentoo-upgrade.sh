@@ -302,7 +302,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: 2'nd toolchain build ======="
         source /etc/profile
-        emerge -1bvq sys-libs/glibc sys-devel/binutils sys-devel/gcc sys-apps/portage
+        emerge -1bv sys-libs/glibc sys-devel/binutils sys-devel/gcc sys-apps/portage
         [ 0 -ne $? ] && echo "Stage $STAGE: 2'nd toolchain build failed ;-( ========" && exit $STAGE
 
         let STAGE++
@@ -313,7 +313,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @system ======="
         source /etc/profile
-        emerge -1bkevq @system
+        emerge -1bkev @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -324,7 +324,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @world ======="
         source /etc/profile
-        emerge -1bkevq @world
+        emerge -1bkev @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -353,7 +353,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         fi
 
         echo '------- Upgrading @system packages -------'
-        emerge -uDNqv --with-bdeps=y @system
+        emerge -uDNv --with-bdeps=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -435,7 +435,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -uDNqv @world
+        emerge -uDNv @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -447,7 +447,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Xorg server upgrades ======="
         if [ -f /etc/portage/need_upgrade_xorg_input_drivers ]; then
                 echo '------- Upgrading Xorg input drivers -------'
-                emerge -1qv @x11-module-rebuild `qlist -IC xf86-input xorg-drivers`
+                emerge -1v @x11-module-rebuild `qlist -IC xf86-input xorg-drivers`
                 [ 0 -ne $? ] && echo "Stage $STAGE: Xorg input drivers upgrade failed ;-( =======" && exit $STAGE
                 rm /etc/portage/need_upgrade_xorg_input_drivers
                 [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
@@ -498,8 +498,8 @@ let STAGE_CNT++
 # Scan for missed shared libraries
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Scan for old versions of shared libraries ======="
-        emerge -1qv @preserved-rebuild
-        [ 0 -ne $? ] && echo "Stage $STAGE: emerge -1qv @preserved-rebuild failed ;-( =======" && exit $STAGE
+        emerge -1v @preserved-rebuild
+        [ 0 -ne $? ] && echo "Stage $STAGE: emerge -1v @preserved-rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
