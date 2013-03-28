@@ -56,7 +56,7 @@ if [ true == "$SILENT" ]; then
         yes "" | make silentoldconfig
         [ "$?" != "0" ] && echo "======= yes \"\" | make silentoldconfig failed ;-( =======" && exit -1
 else
-        make MENUCONFIG_MODE=single_menu MENUCONFIG_COLOR=mono menuconfig
+        TERM=screen make MENUCONFIG_MODE=single_menu MENUCONFIG_COLOR=mono menuconfig
         [ "$?" != "0" ] && echo "======= make menuconfig failed ;-( =======" && exit -1
 fi
 
