@@ -62,6 +62,17 @@ if [ `which genkernel 2>/dev/null` ]; then
     genkernel $GENKERNEL_ARGS all
     [ 0 -ne $? ] && echo "genkernel $GENKERNEL_ARGS all failed ;-( =======" && exit -1
 
+    [ -f /boot/grub/grub.conf ] && \
+    sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
+            s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
+            /boot/grub/grub.conf
+
+    [ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
+
+    echo "--------- Rebuilding kernel modules ---------"
+    emerge -1v @module-rebuild
+    [ 0 -ne $? ] && echo "Upgrading kernel modules failed ;-(" && exit -1
+
 else # using kernel-rebuild
     if [[ ! -f "$vmlinuz_file" || 1 -eq $FORCE_REBUILD ]]; then
         kernel-rebuild.sh $KERNEL_REBUILD_ARGS
