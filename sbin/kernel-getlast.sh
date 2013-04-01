@@ -3,6 +3,8 @@
 let FORCE_REBUILD=0
 KERNEL_REBUILD_ARGS=""
 
+[ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
+
 # available parameters
 eval set -- "`getopt -o h,q --long help,force-rebuild,mrproper,quiet -- \"$@\"`"
 
