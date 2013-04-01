@@ -25,9 +25,9 @@ while true ; do
                         exit 0
                         ;;
                 --force-rebuild) let FORCE_REBUILD=1 ; shift ;;
-                -g|--genkernel-args) GENKERNEL_ARGS="$GENKERNEL_ARGS $2" ; shift ;;
-                --mrproper) KERNEL_REBUILD_ARGS="$KERNEL_REBUILD_ARGS --mrproper" ; shift 2 ;;
-                -q|--quiet) KERNEL_REBUILD_ARGS="$KERNEL_REBUILD_ARGS --silent" ; shift 2 ;;
+                -g|--genkernel-args) GENKERNEL_ARGS="$GENKERNEL_ARGS $2" ; shift 2 ;;
+                --mrproper) KERNEL_REBUILD_ARGS="$KERNEL_REBUILD_ARGS --mrproper" ; shift ;;
+                -q|--quiet) KERNEL_REBUILD_ARGS="$KERNEL_REBUILD_ARGS --silent" ; shift ;;
                 --) shift ; break ;;
                 *) echo "Internal error!" ; exit -1 ;;
         esac
