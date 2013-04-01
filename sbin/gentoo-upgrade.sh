@@ -566,8 +566,8 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: remounting file systems rw->ro ======="
 	for fs in $RO_REMOUNT; do
 		echo "remounting $fs -> ro"
-		mount -f -o remount,ro $fs
-	        [ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,ro $fs failed ;-( =======" && exit $STAGE
+		mount -f -o remount,ro -force $fs
+	        [ 0 -ne $? ] && echo "Stage $STAGE: mount -o remount,ro -force $fs failed ;-( =======" && exit $STAGE
 	done
 
 	let STAGE++

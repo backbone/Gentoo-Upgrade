@@ -21,7 +21,7 @@ case $1 in
     sed -i "s~init=/sbin/e4rat-[a-z]*~init=/sbin/e4rat-collect~g" \
       $GRUB_CFG_FLIST && \
     echo "remounting /boot -> ro" && \
-    mount -o remount,ro /boot && \
+    mount -o remount,ro -force /boot && \
     echo -e "#/bin/bash\n\n(/usr/sbin/e4rat_finalize.sh && rm -f /etc/local.d/e4rat_finalize.start)&\n" \
       > /etc/local.d/e4rat_finalize.start && \
     chmod 755 /etc/local.d/e4rat_finalize.start
@@ -34,7 +34,7 @@ case $1 in
     sed -i "s~init=/sbin/e4rat-[a-z]*~init=/sbin/e4rat-preload~g" \
       $GRUB_CFG_FLIST && \
     echo "remounting /boot -> ro" && \
-    mount -o remount,ro /boot
+    mount -o remount,ro -force /boot
     [ 0 -ne $? ] && echo "e4rat_switch.sh $1 failed" && exit -1
     ;;
   *)
