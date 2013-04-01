@@ -59,6 +59,9 @@ vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`
 
 # genkernel or kernel-rebuild ?
 if [ `which genkernel 2>/dev/null` ]; then
+    [ -f /proc/config.gz ] && zcat /proc/config.gz >/usr/src/linux/.config
+    [ 0 -ne $? ] && echo "zcat /proc/config.gz >/usr/src/linux.config failed ;-( =======" && exit -1
+
     genkernel $GENKERNEL_ARGS all
     [ 0 -ne $? ] && echo "genkernel $GENKERNEL_ARGS all failed ;-( =======" && exit -1
 
