@@ -76,6 +76,7 @@ else # using kernel-rebuild
             [ 0 -ne $? ] && echo "mount -o remount,ro -force $fs failed ;-( =======" && exit -1
         fi
     done
+fi
 
 exit 0
 
