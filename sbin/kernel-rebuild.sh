@@ -69,7 +69,7 @@ if [[ `qlist -IC sys-fs/aufs3 | wc -l` != 0 ]]; then
     [ 0 -ne $? ] && echo "emerge -1 sys-fs/aufs3 failed ;-(" && exit -1
 fi
 
-if [ "$USE_GENKERNEL" == "true" ]
+if [ "$USE_GENKERNEL" == "true" ]; then
     genkernel $GENKERNEL_ARGS all
     [ 0 -ne $? ] && echo "genkernel $GENKERNEL_ARGS all failed ;-( =======" && exit -1
 else
