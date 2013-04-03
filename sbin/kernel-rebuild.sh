@@ -58,8 +58,8 @@ echo CONFIG_FILE=$CONFIG_FILE
 zcat $CONFIG_FILE >.config 2>/dev/null || cat $CONFIG_FILE >.config
 [ "$?" != "0" ] && echo "$CONFIG_FILE doesn't exist or /usr mounted as read-only" && exit -1
 
-yes "" | make silentoldconfig
-[ "$?" != "0" ] && echo "======= yes \"\" | make silentoldconfig failed ;-( =======" && exit -1
+make olddefconfig
+[ "$?" != "0" ] && echo "======= make olddefconfig failed ;-( =======" && exit -1
 
 # aufs3 patches
 if [[ `qlist -IC sys-fs/aufs3 | wc -l` != 0 ]]; then
