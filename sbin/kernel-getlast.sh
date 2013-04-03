@@ -54,7 +54,10 @@ kernel-clean.sh
 vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`
 [ "" == "$vmlinuz_file" ] && echo "vmlinuz_file == \"\"" && exit -1
 
-if [[ ! -f "$vmlinuz_file" || 1 -eq $FORCE_REBUILD ]]; then
+genkernel_file=/boot/`echo $new_kernel | sed 's~^linux~kernel-genkernel~'`
+[ "" == "$genkernel_file" ] && echo "genkernel_file == \"\"" && exit -1
+
+if [[ ! -f "$vmlinuz_file" && ! -f "$genkernel_file" || 1 -eq $FORCE_REBUILD ]]; then
     kernel-rebuild.sh $KERNEL_REBUILD_ARGS
     [ 0 -ne $? ] && echo "kernel-rebuild.sh $KERNEL_REBUILD_ARGS failed" && exit -1
 fi

@@ -24,7 +24,7 @@ cd /lib/modules && $NICE_CMD rm -rf `ls | grep -v "^$REVISION$"`
 
 # rm old kernel revisions
 mount -o remount,rw /boot
-cd /boot && rm -f `ls System.map-* config-* vmlinuz-* initramfs-* 2>/dev/null | grep -vE "$REVISION$|$REVISION.img$"`
+cd /boot && rm -f `ls System.map-* config-* vmlinuz-* kernel-genkernel-* initramfs-* 2>/dev/null | grep -vE "$REVISION$|$REVISION.img$"`
 mount -o remount,ro -force /boot
 
 # rm old sources
