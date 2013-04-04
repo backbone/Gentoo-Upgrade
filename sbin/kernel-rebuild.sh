@@ -100,7 +100,7 @@ fi
 
 [ -f /boot/grub/grub.conf ] && \
 sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
-        s~\/boot\/kernel-genkernel-`uname -m`-[0-9][^]*~\/boot\/kernel-genkernel-`uname -m`-$REVISION~g;
+        s~\/boot\/kernel-genkernel-`uname -m`-[0-9][^ ]*~\/boot\/kernel-genkernel-`uname -m`-$REVISION~g;
         s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
         /boot/grub/grub.conf
 
