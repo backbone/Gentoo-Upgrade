@@ -488,8 +488,9 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                         [ 0 -ne $? ] && echo "Stage $STAGE: eclean -d distfiles failed ;-( =======" && exit $STAGE
                 fi
         fi
-        rm -rf /var/tmp/portage/*
-        [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf /var/tmp/portage/* failed ;-( =======" && exit $STAGE
+        i[ -z "${PORTAGE_TMPDIR}" ] && PORTAGE_TMPDIR=/var/tmp
+        rm -rf "${PORTAGE_TMPDIR}/portage/*
+        [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf "${PORTAGE_TMPDIR}/portage/* failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
