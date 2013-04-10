@@ -489,8 +489,8 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                 fi
         fi
         [ -z "${PORTAGE_TMPDIR}" ] && PORTAGE_TMPDIR=/var/tmp
-        rm -rf "${PORTAGE_TMPDIR}/portage/*
-        [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf "${PORTAGE_TMPDIR}/portage/* failed ;-( =======" && exit $STAGE
+        rm -rf "${PORTAGE_TMPDIR}"/portage/*
+        [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf "${PORTAGE_TMPDIR}"/portage/* failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
