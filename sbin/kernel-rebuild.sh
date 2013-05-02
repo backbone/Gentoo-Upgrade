@@ -116,8 +116,8 @@ cd $pwdtmp
 for fs in $RO_REMOUNT; do
     if [[ "$fs" =~ ^/+usr/*$ || "$fs" =~ ^/+boot/*$ ]]; then
         echo "remounting $fs -> ro"
-        mount -f -o remount,ro -force $fs
-        [ 0 -ne $? ] && echo "mount -f -o remount,ro -force $fs failed ;-( =======" && exit -1
+        mount -o remount,ro -force $fs
+        [ 0 -ne $? ] && echo "mount -o remount,ro -force $fs failed ;-( =======" && exit -1
     fi
 done
 
