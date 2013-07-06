@@ -21,19 +21,29 @@ done
 
 # rm old modules
 echo REVISION=$REVISION
-cd /lib/modules && $NICE_CMD rm -rf `ls --color=never | sort -V | head -n-1 | grep -vE "^$REVISION$|^$UNAME$"`
+cd /lib/modules && $NICE_CMD rm -rf `ls --color=never | sort -V | grep -vE "^$REVISION$|^$UNAME$"`
 
 # rm old kernel revisions
 mount -o remount,rw /boot
 cd /boot
 for f in System.map config vmlinuz kernel-genkernel initramfs; do
-    rm -f `ls --color=never $f-* 2>/dev/null | sort -V | head -n-1 | grep -vE "$REVISION$|$REVISION.img$|$UNAME$|$UNAME.img$"`
+    rm -f `ls --color=never $f-* 2>/dev/null | sort -V | grep -vE "$REVISION$|$REVISION.img$|$UNAME$|$UNAME.img$"`
 done
 mount -o remount,ro -force /boot
 
+# updating grub menu
+echo "Updating Grub menu"
+[ -f /boot/grub/grub.conf ] && \
+sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
+        s~\/boot\/kernel-genkernel-`uname -m`-[0-9][^ ]*~\/boot\/kernel-genkernel-`uname -m`-$REVISION~g;
+        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
+        /boot/grub/grub.conf
+
+[ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
+
 # rm old sources
 cd /usr/src
-$NICE_CMD rm -rf `find -maxdepth 1 -name "linux-*" -type d | sort -V | head -n-1 | grep -vE "linux-$REVISION$|linux-$UNAME"`
+$NICE_CMD rm -rf `find -maxdepth 1 -name "linux-*" -type d | sort -V | grep -vE "linux-$REVISION$|linux-$UNAME"`
 
 # remounting file systems rw->ro
 for fs in $RO_REMOUNT; do
