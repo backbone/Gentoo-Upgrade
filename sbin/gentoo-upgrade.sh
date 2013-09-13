@@ -353,7 +353,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         fi
 
         echo '------- Upgrading @system packages -------'
-        emerge -uDNv --with-bdeps=y @system
+        emerge -uDNvt --with-bdeps=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -435,7 +435,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -uDNv @world
+        emerge -uDNvt @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
