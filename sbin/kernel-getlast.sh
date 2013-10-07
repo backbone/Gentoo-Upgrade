@@ -30,7 +30,14 @@ while true ; do
     esac
 done
 
-kernel_regex=`kernel-config list | grep \* | cut -d" " -f6  | sed 's~[0-9]*\.[0-9]*\.[0-9]*~[0-9]*\.[0-9]*\.[0-9]*~ ; s~-r[0-9]*$~~; s~$~\\\(-r[0-9]\\\)\\\?~'`
+current_kernel_src=`kernel-config list | grep \* | cut -d" " -f6`
+if [ "" == "$current_kernel_src" ]; then
+    current_kernel_src=`readlink -f /usr/src/linux`
+    current_kernel_src=${current_kernel_src##*/}
+fi
+[ "" == "$current_kernel_src" ] && echo "Cann't determine current kernel sources ;-(" && exit -1
+
+kernel_regex=`echo -n $current_kernel_src  | sed 's~[0-9]*\.[0-9]*\.[0-9]*~[0-9]*\.[0-9]*\.[0-9]*~ ; s~-r[0-9]*$~~; s~$~\\\(-r[0-9]\\\)\\\?~'`
 [ "" == "$kernel_regex" ] && echo "kernel_regex build failed ;-(" && exit -1
 
 new_kernel=`kernel-config list | cut -d" " -f6 | grep ^$kernel_regex$ | sort -V | tail -n1`
