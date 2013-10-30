@@ -224,8 +224,9 @@ let STAGE_CNT++
 # Test for necessity to upgrade toolchain packages
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Test for necessity to upgrade toolchain packages ======="
-        cur_gcc_ver=`qlist -ICve sys-devel/gcc | sed 's~.*/gcc-~~'`
-        new_gcc_ver=`emerge -uNp sys-devel/gcc | grep '^\[' | sed 's~.*/gcc-~~ ; s~\ .*~~'`
+        gcc_config_c=`gcc-config -c | cut -d- -f5`
+        cur_gcc_ver=`qlist -ICve sys-devel/gcc | cut -d- -f3-5 | grep --color=never $gcc_config_c`
+        new_gcc_ver=`(qlist -ICve sys-devel/gcc | cut -d- -f3-5; emerge -uNp sys-devel/gcc | grep '^\[' | sed 's~.*/gcc-~~ ; s~\ .*~~' | grep --color=never -v ebuild) | sort -V | tail -n1`
         if [[ "" != "$new_gcc_ver" && "`echo $cur_gcc_ver | sed 's~\([0-9]*\.[0-9]*\).*~\1~'`" != "`echo $new_gcc_ver | sed 's~\([0-9]*\.[0-9]*\).*~\1~'`" ]]; then
                 touch /etc/portage/need_toolchain_rebuild
                 touch /etc/portage/need_kernel_rebuild
