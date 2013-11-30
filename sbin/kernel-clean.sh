@@ -7,6 +7,9 @@ NICE_CMD="nice -n 19 ionice -c2"
 REVISION=`kernel-config list | grep \*$ | cut -d" " -f6 | cut -d- -f2-8`
 [ "" == "$REVISION" ] && echo "No appropriate kernel revision found ;-(" && exit -1
 
+UNAME=`uname -r`
+echo UNAME=$UNAME
+
 SOURCES=linux-$REVISION
 [ "" == "$SOURCES" ] && echo "No appropriate kernel sources found ;-(" && exit -1
 
@@ -20,11 +23,16 @@ for fs in $RW_REMOUNT; do
 done
 
 # rm old modules
-cd /lib/modules && $NICE_CMD rm -rf `ls | grep -v "^$REVISION$"`
+echo REVISION=$REVISION
+cd /lib/modules && $NICE_CMD rm -rf `ls --color=never | grep -vE "^$REVISION$|^$UNAME$" | sort -V | head -n-1`
 
 # rm old kernel revisions
 mount -o remount,rw /boot
-cd /boot && rm -f `ls System.map-* config-* vmlinuz-* kernel-genkernel-* initramfs-* 2>/dev/null | grep -vE "$REVISION$|$REVISION.img$"`
+cd /boot
+for f in System.map config vmlinuz kernel-genkernel initramfs; do
+    rm -f `ls --color=never $f-* 2>/dev/null | grep -vE "$REVISION$|$REVISION.img$|$UNAME$|$UNAME.img$" | sort -V | head -n-1`
+    echo rm -f `ls --color=never $f-* 2>/dev/null | grep -vE "$REVISION$|$REVISION.img$|$UNAME$|$UNAME.img$" | sort -V | head -n-1`
+done
 mount -o remount,ro -force /boot
 
 # rm old sources
