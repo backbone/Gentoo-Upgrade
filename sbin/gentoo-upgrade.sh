@@ -332,14 +332,56 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
+# Python upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Python upgrade ======="
+
+	echo 'Test and remember if we should run python-updater after Python upgrade'
+	if [ 0 -ne `emerge -uNp dev-lang/python 2>&1 | grep '^\[' | wc -l` ]; then
+		touch /etc/portage/need_upgrade_python
+	fi
+
+	echo '------- Upgrading Python package -------'
+	emerge -uDNvt --with-bdeps=y python
+	[ 0 -ne $? ] && echo "Stage $STAGE: Python upgrade failed ;-( =======" && exit $STAGE
+
+	available_python_list=`eselect python list | cut -d" " -f6 | grep -v ^$ | sort -rV`
+	[ "" == "$available_python_list" ] && echo "Stage $STAGE: empty available_python_list ;-( =======" && exit $STAGE
+
+	let ndeps=0
+	new_python=`echo $available_python_list | cut -d" " -f1`
+
+	for p in $available_python_list ;  do
+		pkgname=`echo $p | sed 's~^python~python-~'`
+		pkgnamever=`qlist -ICv dev-lang/$pkgname`
+		let ndeps_tmp=`equery d =$pkgnamever | cut -d" " -f1 | wc -l`
+		[ $ndeps_tmp -gt $ndeps ] && new_python=$p && let ndeps=$ndeps_tmp
+	done
+
+	old_python=`eselect python show 2>/dev/null`
+
+	if [[ "$old_python" != "$new_python" || -f /etc/portage/need_upgrade_python ]]; then
+		echo "Running python-updater..."
+		touch /etc/portage/need_upgrade_python
+		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
+		eselect python set $new_python
+		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
+
+		$NICE_CMD python-updater
+		[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
+		rm /etc/portage/need_upgrade_python
+		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
+	else
+		echo "------- Not need to upgrade python -------"
+	fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
 # @system upgrade
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
-
-        echo 'Test and remember if we should run python-updater after @system upgrade'
-        if [ 0 -ne `emerge -uNp dev-lang/python 2>&1 | grep '^\[' | wc -l` ]; then
-	        touch /etc/portage/need_upgrade_python
-        fi
 
         echo 'Test and remember if we should run perl-cleaner after @system upgrade'
         if [[ 0 -ne `qlist -IC dev-lang/perl | wc -l`
@@ -356,41 +398,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo '------- Upgrading @system packages -------'
         emerge -uDNvt --with-bdeps=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
-
-        let STAGE++
-fi
-let STAGE_CNT++
-
-# Python upgrade
-if [ $STAGE_CNT -eq $STAGE ]; then
-        echo "======= STAGE $STAGE: Python upgrade ======="
-	available_python_list=`eselect python list | cut -d" " -f6 | grep -v ^$ | sort -rV`
-	[ "" == "$available_python_list" ] && echo "Stage $STAGE: empty available_python_list ;-( =======" && exit $STAGE
-
-	let ndeps=0
-	new_python=`echo $available_python_list | cut -d" " -f1`
-
-	for p in $available_python_list ;  do
-		pkgname=`echo $p | sed 's~^python~python-~'`
-		let tmp=`equery d =dev-lang/$pkgname | cut -d" " -f1 | wc -l`
-		[ $tmp -gt $ndeps ] && new_python=$p && let ndeps=$tmp
-	done
-
-	old_python=`eselect python show 2>/dev/null`
-
-	if [[ "$old_python" != "$new_python" || -f /etc/portage/need_upgrade_python ]]; then
-		echo "Running python-updater..."
-		touch /etc/portage/need_upgrade_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
-		eselect python set $new_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
-		$NICE_CMD python-updater
-		[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
-		rm /etc/portage/need_upgrade_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
-	else
-		echo "------- Not need to upgrade python -------"
-	fi
 
         let STAGE++
 fi
