@@ -332,6 +332,25 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
+# Check if we should run perl-cleaner or haskell-updater after @system upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
+
+        echo 'Test and remember if we should run perl-cleaner after @system upgrade'
+        if [[ 0 -ne `qlist -IC dev-lang/perl | wc -l`
+              && 0 -ne `emerge -uNp dev-lang/perl 2>&1 | grep '^\[' | wc -l` ]]; then
+	        touch /etc/portage/need_upgrade_perl
+        fi
+
+        echo 'Test and remember if we should run haskell-updater after @system upgrade'
+        if [[ 0 -ne `qlist -IC dev-lang/ghc | wc -l`
+              &&  0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]]; then
+	        touch /etc/portage/need_upgrade_haskell
+        fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
 # Python upgrade
 if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: Python upgrade ======="
@@ -382,18 +401,6 @@ let STAGE_CNT++
 # @system upgrade
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
-
-        echo 'Test and remember if we should run perl-cleaner after @system upgrade'
-        if [[ 0 -ne `qlist -IC dev-lang/perl | wc -l`
-              && 0 -ne `emerge -uNp dev-lang/perl 2>&1 | grep '^\[' | wc -l` ]]; then
-	        touch /etc/portage/need_upgrade_perl
-        fi
-
-        echo 'Test and remember if we should run haskell-updater after @system upgrade'
-        if [[ 0 -ne `qlist -IC dev-lang/ghc | wc -l`
-              &&  0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]]; then
-	        touch /etc/portage/need_upgrade_haskell
-        fi
 
         echo '------- Upgrading @system packages -------'
         emerge -uDNvt --with-bdeps=y @system
