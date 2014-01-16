@@ -9,7 +9,6 @@ DEST_FILE=`echo $@ | awk '{print $3}'`
 if [ -f "$DEST_FILE" ]; then
 	exit 0
 else
-	echo "======= FULL DOWNLOAD... ======"
 	echo "======= PARAMS: $@ ======"
 	URL_FNAME=${URL##*/}
 	DEST_FILE_DIR=${DEST_FILE%/*}
@@ -19,6 +18,7 @@ else
 		mv -f $DEST_FILE_DIR/$URL_FNAME $DEST_FILE
 		exit $?
 	else
+		echo "======= FULL DOWNLOAD... ======"
 		/usr/bin/wget -t1 --passive-ftp $@
 		exit $?
 	fi
