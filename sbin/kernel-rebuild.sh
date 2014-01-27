@@ -70,7 +70,7 @@ if [[ `qlist -IC sys-fs/aufs3 | wc -l` != 0 ]]; then
 fi
 
 if [ "$USE_GENKERNEL" == "true" ]; then
-    genkernel $GENKERNEL_ARGS all
+    MENUCONFIG_MODE=single_menu MENUCONFIG_COLOR=mono genkernel $GENKERNEL_ARGS all
     [ 0 -ne $? ] && echo "genkernel $GENKERNEL_ARGS all failed ;-( =======" && exit -1
 else
     if [ true != "$SILENT" ]; then
