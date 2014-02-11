@@ -138,58 +138,58 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         	done
 	fi
 
-        # layman syncronization
-        if [ `which layman 2>/dev/null` ]; then
-                $NICE_CMD layman -S
-                [ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
-        fi
+	# layman syncronization
+	if [ `which layman 2>/dev/null` ]; then
+		$NICE_CMD layman -S
+		[ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
+	fi
 
-        # sync portage tree
-        $NICE_CMD eix-sync || $NICE_CMD emerge --sync
-        [ 0 -ne $? ] && echo "Stage $STAGE: portage tree synchronization failed ;-( =======" && exit $STAGE
+	# sync portage tree
+	$NICE_CMD eix-sync || $NICE_CMD emerge --sync
+	[ 0 -ne $? ] && echo "Stage $STAGE: portage tree synchronization failed ;-( =======" && exit $STAGE
 
 	# Update metadata cache
 	in_list "$EGENCACHE" ${TRUE_LIST[@]} &&
 	if [[ "git" == "$SYNC_TYPE" ]]; then
 		echo "---------- Updating metadata cache for Git portage tree ----------"
 		$NICE_CMD egencache --repo=gentoo --update --jobs=$((`getconf _NPROCESSORS_ONLN`+1))
-        	[ 0 -ne $? ] && echo "Stage $STAGE: Metadata update failed ;-( =======" && exit $STAGE
-        fi
-
-        # clear exclude list
-        if [ "rsync" == "$SYNC_TYPE" ]; then
-		echo -n > /etc/portage/rsync.excludes
-        	[ 0 -ne $? ] && echo "Stage $STAGE: failed to clear /etc/portage/rsync.excludes ;-( =======" && exit $STAGE
+		[ 0 -ne $? ] && echo "Stage $STAGE: Metadata update failed ;-( =======" && exit $STAGE
 	fi
 
-        # eix-remote update
-        if [ `which eix-remote 2>/dev/null` ]; then
-                $NICE_CMD eix-remote update
-                [ 0 -ne $? ] && echo "Stage $STAGE: 1'st eix-remote update failed ;-( =======" && exit $STAGE
-        fi
+	# clear exclude list
+	if [ "rsync" == "$SYNC_TYPE" ]; then
+		echo -n > /etc/portage/rsync.excludes
+		[ 0 -ne $? ] && echo "Stage $STAGE: failed to clear /etc/portage/rsync.excludes ;-( =======" && exit $STAGE
+	fi
 
-        # eix update
-        if [ `which eix-update 2>/dev/null` ]; then
-                $NICE_CMD eix-update
-                [ 0 -ne $? ] && echo "Stage $STAGE: eix-update failed ;-( =======" && exit $STAGE
-        fi
+	# eix-remote update
+	if [ `which eix-remote 2>/dev/null` ]; then
+		$NICE_CMD eix-remote update
+		[ 0 -ne $? ] && echo "Stage $STAGE: 1'st eix-remote update failed ;-( =======" && exit $STAGE
+	fi
 
-        # eix-remote update
-        if [ `which eix-remote 2>/dev/null` ]; then
-                $NICE_CMD eix-remote update
-                [ 0 -ne $? ] && echo "Stage $STAGE: 2'nd eix-remote update failed ;-( =======" && exit $STAGE
-        fi
+	# eix update
+	if [ `which eix-update 2>/dev/null` ]; then
+		$NICE_CMD eix-update
+		[ 0 -ne $? ] && echo "Stage $STAGE: eix-update failed ;-( =======" && exit $STAGE
+	fi
 
-        # remind to upgrade Xorg input drivers
-        tmp=`qlist -IC x11-base/xorg-server`
-        if [ "" != "$tmp" ]; then
-                if [ "0" -ne "`emerge -uNp x11-base/xorg-server 2>&1 | grep '^\[' | wc -l`" ]; then
-                        touch /etc/portage/need_upgrade_xorg_input_drivers
-                        [ 0 -ne $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
-                fi
-        fi
+	# eix-remote update
+	if [ `which eix-remote 2>/dev/null` ]; then
+		$NICE_CMD eix-remote update
+		[ 0 -ne $? ] && echo "Stage $STAGE: 2'nd eix-remote update failed ;-( =======" && exit $STAGE
+	fi
 
-        let STAGE++
+	# remind to upgrade Xorg input drivers
+	tmp=`qlist -IC x11-base/xorg-server`
+	if [ "" != "$tmp" ]; then
+		if [ "0" -ne "`emerge -uNp x11-base/xorg-server 2>&1 | grep '^\[' | wc -l`" ]; then
+			touch /etc/portage/need_upgrade_xorg_input_drivers
+			[ 0 -ne $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_xorg_input_drivers ;-( =======" && exit $STAGE
+		fi
+	fi
+
+	let STAGE++
 
 	# recreate portage squashfs files
 	if [[ -x /etc/init.d/squash_portage && "" != "`mount | grep '^aufs' | grep $PORTDIR`" ]]; then
