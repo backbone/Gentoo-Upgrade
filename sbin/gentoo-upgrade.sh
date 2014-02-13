@@ -138,11 +138,12 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         	done
 	fi
 
-	# layman syncronization
-	if [ `which layman 2>/dev/null` ]; then
-		$NICE_CMD layman -S
-		[ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
-	fi
+	# /etc/eix-sync.conf:* and we don't need to call layman manually
+	## layman syncronization
+	#if [ `which layman 2>/dev/null` ]; then
+	#	$NICE_CMD layman -S
+	#	[ 0 -ne $? ] && echo "Stage $STAGE: layman synchronization failed ;-( =======" && exit $STAGE
+	#fi
 
 	# sync portage tree
 	$NICE_CMD eix-sync || $NICE_CMD emerge --sync
@@ -168,17 +169,18 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		[ 0 -ne $? ] && echo "Stage $STAGE: 1'st eix-remote update failed ;-( =======" && exit $STAGE
 	fi
 
-	# eix update
-	if [ `which eix-update 2>/dev/null` ]; then
-		$NICE_CMD eix-update
-		[ 0 -ne $? ] && echo "Stage $STAGE: eix-update failed ;-( =======" && exit $STAGE
-	fi
-
-	# eix-remote update
-	if [ `which eix-remote 2>/dev/null` ]; then
-		$NICE_CMD eix-remote update
-		[ 0 -ne $? ] && echo "Stage $STAGE: 2'nd eix-remote update failed ;-( =======" && exit $STAGE
-	fi
+	# Spare action is not required
+	## eix update
+	#if [ `which eix-update 2>/dev/null` ]; then
+	#	$NICE_CMD eix-update
+	#	[ 0 -ne $? ] && echo "Stage $STAGE: eix-update failed ;-( =======" && exit $STAGE
+	#fi
+	#
+	## eix-remote update
+	#if [ `which eix-remote 2>/dev/null` ]; then
+	#	$NICE_CMD eix-remote update
+	#	[ 0 -ne $? ] && echo "Stage $STAGE: 2'nd eix-remote update failed ;-( =======" && exit $STAGE
+	#fi
 
 	# remind to upgrade Xorg input drivers
 	tmp=`qlist -IC x11-base/xorg-server`
