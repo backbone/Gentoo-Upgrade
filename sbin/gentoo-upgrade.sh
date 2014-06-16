@@ -327,7 +327,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @world ======="
         source /etc/profile
-        emerge -1bkev @world
+        emerge -1kev @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
