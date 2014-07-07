@@ -69,8 +69,10 @@ if [[ `qlist -IC sys-fs/aufs3 | wc -l` != 0 ]]; then
     [ 0 -ne $? ] && echo "emerge -1 sys-fs/aufs3 failed ;-(" && exit -1
 fi
 
+jobs=$((`getconf _NPROCESSORS_ONLN`+1))
+
 if [ "$USE_GENKERNEL" == "true" ]; then
-    MENUCONFIG_MODE=single_menu MENUCONFIG_COLOR=mono genkernel $GENKERNEL_ARGS all
+    MENUCONFIG_MODE=single_menu MENUCONFIG_COLOR=mono genkernel --makeopts=-j$jobs $GENKERNEL_ARGS all
     [ 0 -ne $? ] && echo "genkernel $GENKERNEL_ARGS all failed ;-( =======" && exit -1
 else
     if [ true != "$SILENT" ]; then
@@ -80,7 +82,6 @@ else
 
     # disable distcc for -march=native -mtune=native
     grep 'CONFIG_X86_MARCH_NATIVE=y' .config &>/dev/null
-    jobs=$((`getconf _NPROCESSORS_ONLN`+1))
     if [[ "$?" == 0 ]]; then
         $NICE_CMD make -j$jobs
         [ 0 -ne $? ] && echo "Kernel build failed ;-(" && exit -1
