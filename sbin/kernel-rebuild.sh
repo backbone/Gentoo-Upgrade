@@ -99,13 +99,18 @@ else
     which dracut &>/dev/null && $NICE_CMD dracut --hostonly --force /boot/initramfs-$REVISION.img $REVISION
 fi
 
-[ -f /boot/grub/grub.conf ] && \
-sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
-        s~\/boot\/kernel-genkernel-`uname -m`-[0-9][^ ]*~\/boot\/kernel-genkernel-`uname -m`-$REVISION~g;
-        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
-        /boot/grub/grub.conf
-
-[ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
+# Updating Grub config
+echo "Updating Grub menu"
+if [ `which grub2-mkconfig 2>/dev/null` ]; then
+	[ -f /boot/grub/grub.cfg ] && grub2-mkconfig -o /boot/grub/grub.cfg
+	[ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
+else
+	[ -f /boot/grub/grub.conf ] && \
+	sed -i "s~\/boot\/vmlinuz-[0-9][^ ]*~\/boot\/vmlinuz-$REVISION~g;
+	        s~\/boot\/kernel-genkernel-`uname -m`-[0-9][^ ]*~\/boot\/kernel-genkernel-`uname -m`-$REVISION~g;
+	        s~\/boot\/initramfs-[0-9][^ ]*~\/boot\/initramfs-$REVISION.img~g" \
+	        /boot/grub/grub.conf
+fi
 
 echo "--------- Rebuilding kernel modules ---------"
 emerge -1v @module-rebuild
