@@ -595,8 +595,10 @@ let STAGE_CNT++
 # Enabling e4rat data collection
 if [ $STAGE_CNT -eq $STAGE ]; then
 	echo "======= STAGE $STAGE: Enabling e4rat data collection ======="
-	e4rat_switch.sh collect
-	[ 0 -ne $? ] && echo "Stage $STAGE: Enabling e4rat data collection failed ;-( =======" && exit $STAGE
+	if [ `which e4rat-collect 2>/dev/null` ]; then
+		e4rat_switch.sh collect
+		[ 0 -ne $? ] && echo "Stage $STAGE: Enabling e4rat data collection failed ;-( =======" && exit $STAGE
+	fi
 
 	let STAGE++
 fi
