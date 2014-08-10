@@ -478,11 +478,13 @@ let STAGE_CNT++
 
 # Upgrading live packages
 if [ $STAGE_CNT -eq $STAGE ]; then
-        echo "======= STAGE $STAGE: Upgrading live packages ======="
-        smart-live-rebuild
-        [ 0 -ne $? ] && echo "Stage $STAGE: Upgrading live packages failed ;-( =======" && exit $STAGE
+	if [ `which smart-live-rebuild 2>/dev/null` ]; then
+		echo "======= STAGE $STAGE: Upgrading live packages ======="
+		smart-live-rebuild
+		[ 0 -ne $? ] && echo "Stage $STAGE: Upgrading live packages failed ;-( =======" && exit $STAGE
+	fi
 
-        let STAGE++
+	let STAGE++
 fi
 let STAGE_CNT++
 
