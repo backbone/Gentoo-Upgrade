@@ -363,7 +363,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	fi
 
 	echo '------- Upgrading Python package -------'
-	emerge -uDNvtq --with-bdeps=y python
+	emerge -uDNvt --with-bdeps=y python
 	[ 0 -ne $? ] && echo "Stage $STAGE: Python upgrade failed ;-( =======" && exit $STAGE
 
 	available_python_list=`eselect python list | cut -d" " -f6 | grep -v ^$ | sort -rV`
@@ -405,7 +405,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
 
         echo '------- Upgrading @system packages -------'
-        emerge -uDNvtq --with-bdeps=y @system
+        emerge -uDNvt --with-bdeps=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -452,7 +452,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -uDNvtq --with-bdeps=y @world
+        emerge -uDNvt --with-bdeps=y @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
