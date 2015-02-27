@@ -519,8 +519,8 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Prelink libraries ======="
         if [ `which prelink 2>/dev/null` ]; then
-                $NICE_CMD prelink -avfmqR
-                [ 0 -ne $? ] && echo "Stage $STAGE: prelink -avfmqR failed ;-( =======" && exit $STAGE
+                $NICE_CMD prelink -avmqR
+                [ 0 -ne $? ] && echo "Stage $STAGE: prelink -avmqR failed ;-( =======" && exit $STAGE
         fi
 
         let STAGE++
