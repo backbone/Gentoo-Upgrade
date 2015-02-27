@@ -199,18 +199,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
-# disable prelink
-#if [ $STAGE_CNT -eq $STAGE ]; then
-#        echo "======= STAGE $STAGE: disable prelink ======="
-#        if [ `which prelink 2>/dev/null` ]; then
-#                $NICE_CMD prelink -ua 2>/dev/null
-#                [ 0 -ne $? ] && echo "Stage $STAGE: prelink disabling failed ;-( =======" && exit $STAGE
-#        fi
-#
-#        let STAGE++
-#fi
-#let STAGE_CNT++
-
 # Test for necessity to upgrade toolchain packages
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Test for necessity to upgrade toolchain packages ======="
