@@ -79,7 +79,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Updating gentoo-upgrade script ======="
         if [ `which smart-live-rebuild 2>/dev/null` ]; then
-                $NICE_CMD smart-live-rebuild -f app-admin/gentoo-upgrade
+                $NICE_CMD smart-live-rebuild -ET16 -f app-admin/gentoo-upgrade
                 [ 0 -ne $? ] && echo "Stage $STAGE: Updating gentoo-upgrade script failed ;-( =======" && exit $STAGE
         fi
 
@@ -456,7 +456,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
 	if [ `which smart-live-rebuild 2>/dev/null` ]; then
 		echo "======= STAGE $STAGE: Upgrading live packages ======="
-		smart-live-rebuild
+		smart-live-rebuild -ET16
 		[ 0 -ne $? ] && echo "Stage $STAGE: Upgrading live packages failed ;-( =======" && exit $STAGE
 	fi
 
