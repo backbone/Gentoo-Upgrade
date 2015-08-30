@@ -336,11 +336,10 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	echo 'Test and remember if we should run python-updater after Python upgrade'
 	if [ 0 -ne `emerge -uNp dev-lang/python 2>&1 | grep '^\[' | wc -l` ]; then
 		touch /etc/portage/need_upgrade_python
+		echo '------- Upgrading Python package -------'
+		emerge -1uDNvt --with-bdeps=y python
+		[ 0 -ne $? ] && echo "Stage $STAGE: Python upgrade failed ;-( =======" && exit $STAGE
 	fi
-
-	echo '------- Upgrading Python package -------'
-	emerge -1uDNvt --with-bdeps=y python
-	[ 0 -ne $? ] && echo "Stage $STAGE: Python upgrade failed ;-( =======" && exit $STAGE
 
 	available_python_list=`eselect python list | cut -d" " -f6 | grep -v ^$ | sort -rV`
 	[ "" == "$available_python_list" ] && echo "Stage $STAGE: empty available_python_list ;-( =======" && exit $STAGE
