@@ -101,7 +101,10 @@ fi
 
 # Updating Grub config
 echo "Updating Grub menu"
-if [ `which grub2-mkconfig 2>/dev/null` ]; then
+if [ `which grub-mkconfig 2>/dev/null` ]; then
+	[ -f /boot/grub/grub.cfg ] && grub-mkconfig -o /boot/grub/grub.cfg
+	[ -f /boot/grub2/grub.cfg ] && grub-mkconfig -o /boot/grub2/grub.cfg
+elif [ `which grub2-mkconfig 2>/dev/null` ]; then
 	[ -f /boot/grub/grub.cfg ] && grub2-mkconfig -o /boot/grub/grub.cfg
 	[ -f /boot/grub2/grub.cfg ] && grub2-mkconfig -o /boot/grub2/grub.cfg
 else
