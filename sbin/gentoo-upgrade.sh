@@ -363,8 +363,10 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		eselect python set $new_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
 
-		$NICE_CMD python-updater
-		[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
+		if [ `which python-updater 2>/dev/null` ]; then
+			$NICE_CMD python-updater
+			[ 0 != $? ] && echo "Stage $STAGE: python-updater failed ;-( =======" && exit $STAGE
+		fi
 		rm /etc/portage/need_upgrade_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
 	else
