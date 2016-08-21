@@ -395,8 +395,10 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
 	if [ -f /etc/portage/need_upgrade_haskell ]; then
 		echo "Running haskell-updater..."
-		$NICE_CMD haskell-updater --upgrade
-		[ 0 != $? ] && echo "Stage $STAGE: haskell-updater --upgrade failed ;-( =======" && exit $STAGE
+		if [ `which haskell-updater 2>/dev/null` ]; then
+			$NICE_CMD haskell-updater --upgrade
+			[ 0 != $? ] && echo "Stage $STAGE: haskell-updater --upgrade failed ;-( =======" && exit $STAGE
+		fi
 		rm /etc/portage/need_upgrade_haskell
 		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_haskell ;-( =======" && exit $STAGE
 	else
