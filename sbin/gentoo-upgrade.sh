@@ -360,8 +360,11 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		echo "Running python-updater..."
 		touch /etc/portage/need_upgrade_python
 		[ 0 != $? ] && echo "Stage $STAGE: cann't touch /etc/portage/need_upgrade_python ;-( =======" && exit $STAGE
-		eselect python set $new_python
-		[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
+		in_list "$PYTHON_ESELECT" ${TRUE_LIST[@]}
+		if [ 0 -eq $? ]; then
+			eselect python set $new_python
+			[ 0 != $? ] && echo "Stage $STAGE: cann't switch to another python version ;-( =======" && exit $STAGE
+		fi
 
 		if [ `which python-updater 2>/dev/null` ]; then
 			$NICE_CMD python-updater
