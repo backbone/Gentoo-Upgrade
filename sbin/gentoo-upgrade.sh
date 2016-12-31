@@ -337,7 +337,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	if [ 0 -ne `emerge -uNp dev-lang/python 2>&1 | grep '^\[' | wc -l` ]; then
 		touch /etc/portage/need_upgrade_python
 		echo '------- Upgrading Python package -------'
-		emerge -1uDNvt --with-bdeps=y python
+		emerge -1uDNvt python
 		[ 0 -ne $? ] && echo "Stage $STAGE: Python upgrade failed ;-( =======" && exit $STAGE
 	fi
 
@@ -385,7 +385,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
 
         echo '------- Upgrading @system packages -------'
-        emerge -1uDNvt --with-bdeps=y @system
+        emerge -1uDNvt @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -416,7 +416,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -1uDNvt --with-bdeps=y @world
+        emerge -1uDNvt @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
