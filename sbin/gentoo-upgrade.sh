@@ -165,7 +165,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
 	# eix-remote update
 	if [ `which eix-remote 2>/dev/null` ]; then
-		$NICE_CMD eix-remote update2
+		$NICE_CMD eix-remote update
 		# Don't check command status as gpo.zugaina.org sometimes gets broken archive for a long time
 		# [ 0 -ne $? ] && echo "Stage $STAGE: 1'st eix-remote update failed ;-( =======" && exit $STAGE
 	fi
