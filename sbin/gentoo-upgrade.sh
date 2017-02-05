@@ -186,6 +186,12 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		/etc/init.d/squash_portage restart
 		[ 0 -ne $? ] && echo "Stage $STAGE: cann't restart squash_portage ;-( =======" && exit $STAGE
 	fi
+
+	# recreate layman squashfs files
+	if [[ -x /etc/init.d/squash_layman && "" != "`mount | grep '^aufs' | grep $PORTDIR`" ]]; then
+		/etc/init.d/squash_layman restart
+		[ 0 -ne $? ] && echo "Stage $STAGE: cann't restart squash_layman ;-( =======" && exit $STAGE
+	fi
 fi
 let STAGE_CNT++
 
