@@ -298,7 +298,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @system ======="
         source /etc/profile
-        emerge -1bkev @system
+        emerge -1bkev --keep-going=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -309,7 +309,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: rebuild @world ======="
         source /etc/profile
-        emerge -1kev @world
+        emerge -1kev --keep-going=y @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -391,7 +391,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @system upgrade ======="
 
         echo '------- Upgrading @system packages -------'
-        emerge -1uDNvt @system
+        emerge -1uDNvt --keep-going=y @system
         [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
@@ -521,7 +521,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
                 # [ 0 -ne $? ] && echo "Stage $STAGE: glsa-check fix failed ;-( =======" && exit $STAGE
         fi
 
-        emerge -1pv @security
+        emerge -1v @security
 
         let STAGE++
 fi
