@@ -4,10 +4,10 @@
 
 NICE_CMD="nice -n 19 ionice -c2"
 
-REVISION=`kernel-config list | grep \*$ | cut -d" " -f6 | cut -d- -f2-8`
+REVISION=`kernel-config list | grep \*$ | cut -d" " -f6 | cut -d- -f2-8 | sed 's~\\+~\\\\+~g'`
 [ "" == "$REVISION" ] && echo "No appropriate kernel revision found ;-(" && exit -1
 
-UNAME=`uname -r`
+UNAME=`uname -r | sed 's~\\+~\\\\+~g'`
 echo UNAME=$UNAME
 
 # remounting file systems ro->rw
