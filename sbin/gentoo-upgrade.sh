@@ -492,7 +492,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
 	if [ -f /etc/portage/need_upgrade_perl ]; then
 		echo "Running perl-cleaner..."
-		$NICE_CMD perl-cleaner --all
+		$NICE_CMD perl-cleaner --reallyall
 		[ 0 != $? ] && echo "Stage $STAGE: perl-cleaner failed ;-( =======" && exit $STAGE
 		rm /etc/portage/need_upgrade_perl
 		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_perl ;-( =======" && exit $STAGE
