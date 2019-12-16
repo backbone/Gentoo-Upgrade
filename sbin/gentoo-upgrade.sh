@@ -316,7 +316,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
-# Check if we should run perl-cleaner or haskell-updater after @system upgrade
+# Check if we should run perl-cleaner or haskell-updater
 if [ $STAGE_CNT -eq $STAGE ]; then
 
         echo 'Test and remember if we should run perl-cleaner after @system upgrade'
@@ -330,6 +330,24 @@ if [ $STAGE_CNT -eq $STAGE ]; then
               &&  0 -ne `emerge -uNp dev-lang/ghc 2>&1 | grep '^\[' | wc -l` ]]; then
 	        touch /etc/portage/need_upgrade_haskell
         fi
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
+# Perl upgrade
+if [ $STAGE_CNT -eq $STAGE ]; then
+	echo "======= STAGE $STAGE: Perl upgrade ======="
+
+	if [ -f /etc/portage/need_upgrade_perl ]; then
+		echo "Running perl-cleaner..."
+		$NICE_CMD perl-cleaner --reallyall
+		[ 0 != $? ] && echo "Stage $STAGE: perl-cleaner failed ;-( =======" && exit $STAGE
+		rm /etc/portage/need_upgrade_perl
+		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_perl ;-( =======" && exit $STAGE
+	else
+		echo "------- Not need to upgrade perl -------"
+	fi
 
         let STAGE++
 fi
@@ -481,24 +499,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         [ -z "${PORTAGE_TMPDIR}" ] && PORTAGE_TMPDIR=/var/tmp
         rm -rf "${PORTAGE_TMPDIR}"/portage/*
         [ 0 -ne $? ] && echo "Stage $STAGE: rm -rf "${PORTAGE_TMPDIR}"/portage/* failed ;-( =======" && exit $STAGE
-
-        let STAGE++
-fi
-let STAGE_CNT++
-
-# Perl upgrade
-if [ $STAGE_CNT -eq $STAGE ]; then
-	echo "======= STAGE $STAGE: Perl upgrade ======="
-
-	if [ -f /etc/portage/need_upgrade_perl ]; then
-		echo "Running perl-cleaner..."
-		$NICE_CMD perl-cleaner --reallyall
-		[ 0 != $? ] && echo "Stage $STAGE: perl-cleaner failed ;-( =======" && exit $STAGE
-		rm /etc/portage/need_upgrade_perl
-		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_perl ;-( =======" && exit $STAGE
-	else
-		echo "------- Not need to upgrade perl -------"
-	fi
 
         let STAGE++
 fi
