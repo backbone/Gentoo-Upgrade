@@ -258,7 +258,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
         # skip next toolchain upgrade stages
         else
-                let STAGE+=5
+                let STAGE+=3
         fi
 fi
 let STAGE_CNT++
@@ -290,27 +290,8 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         emerge -1bv sys-libs/glibc sys-devel/binutils sys-devel/gcc sys-apps/portage
         [ 0 -ne $? ] && echo "Stage $STAGE: 2'nd toolchain build failed ;-( ========" && exit $STAGE
 
-        let STAGE++
-fi
-let STAGE_CNT++
-
-# rebuild @system
-if [ $STAGE_CNT -eq $STAGE ]; then
-        echo "======= STAGE $STAGE: rebuild @system ======="
-        source /etc/profile
-        emerge -1bkev --keep-going=y @system
-        [ 0 -ne $? ] && echo "Stage $STAGE: @system rebuild failed ;-( =======" && exit $STAGE
-
-        let STAGE++
-fi
-let STAGE_CNT++
-
-# rebuild @world
-if [ $STAGE_CNT -eq $STAGE ]; then
-        echo "======= STAGE $STAGE: rebuild @world ======="
-        source /etc/profile
-        emerge -1kev --keep-going=y @world
-        [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
+	    touch /etc/portage/need_system_rebuild
+	    touch /etc/portage/need_world_rebuild
 
         let STAGE++
 fi
@@ -410,7 +391,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 
         echo '------- Upgrading @system packages -------'
         emerge -1uDNvt --keep-going=y @system
-        [ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
+        #[ 0 -ne $? ] && echo "Stage $STAGE: @system upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
 fi
@@ -528,18 +509,6 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 fi
 let STAGE_CNT++
 
-# Prelink libraries
-if [ $STAGE_CNT -eq $STAGE ]; then
-        echo "======= STAGE $STAGE: Prelink libraries ======="
-        if [ `which prelink 2>/dev/null` ]; then
-                $NICE_CMD prelink -avmqR
-                [ 0 -ne $? ] && echo "Stage $STAGE: prelink -avmqR failed ;-( =======" && exit $STAGE
-        fi
-
-        let STAGE++
-fi
-let STAGE_CNT++
-
 # Upgrade kernel
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Upgrade kernel ======="
@@ -565,6 +534,49 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: Update config files ======="
         etc-update
         [ 0 -ne $? ] && echo "Stage $STAGE: etc-update failed ;-( =======" && exit $STAGE
+
+        let STAGE++
+fi
+let STAGE_CNT++
+
+# rebuild @system
+if [ $STAGE_CNT -eq $STAGE ]; then
+	if [ -f /etc/portage/need_system_rebuild ]; then
+        echo "======= STAGE $STAGE: rebuild @system ======="
+        source /etc/profile
+        emerge -1bkev --keep-going=y @system
+        [ 0 -ne $? ] && echo "Stage $STAGE: @system rebuild failed ;-( =======" && exit $STAGE
+        rm /etc/portage/need_system_rebuild
+        [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_system_rebuild ;-( =======" && exit $STAGE
+
+        let STAGE++
+	fi
+fi
+let STAGE_CNT++
+
+# rebuild @world
+if [ $STAGE_CNT -eq $STAGE ]; then
+	if [ -f /etc/portage/need_world_rebuild ]; then
+        echo "======= STAGE $STAGE: rebuild @world ======="
+        source /etc/profile
+        emerge -1kev --keep-going=y @world
+        [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
+        rm /etc/portage/need_world_rebuild
+        [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_world_rebuild ;-( =======" && exit $STAGE
+
+        let STAGE++
+	fi
+fi
+let STAGE_CNT++
+
+
+# Prelink libraries
+if [ $STAGE_CNT -eq $STAGE ]; then
+        echo "======= STAGE $STAGE: Prelink libraries ======="
+        if [ `which prelink 2>/dev/null` ]; then
+                $NICE_CMD prelink -avmqR
+                [ 0 -ne $? ] && echo "Stage $STAGE: prelink -avmqR failed ;-( =======" && exit $STAGE
+        fi
 
         let STAGE++
 fi
