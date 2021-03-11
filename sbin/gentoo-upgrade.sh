@@ -550,9 +550,9 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         [ 0 -ne $? ] && echo "Stage $STAGE: @system rebuild failed ;-( =======" && exit $STAGE
         rm /etc/portage/need_system_rebuild
         [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_system_rebuild ;-( =======" && exit $STAGE
-
-        let STAGE++
 	fi
+
+    let STAGE++
 fi
 let STAGE_CNT++
 
@@ -565,9 +565,9 @@ if [ $STAGE_CNT -eq $STAGE ]; then
         [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
         rm /etc/portage/need_world_rebuild
         [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_world_rebuild ;-( =======" && exit $STAGE
-
-        let STAGE++
 	fi
+
+    let STAGE++
 fi
 let STAGE_CNT++
 
