@@ -423,7 +423,7 @@ let STAGE_CNT++
 if [ $STAGE_CNT -eq $STAGE ]; then
         echo "======= STAGE $STAGE: @world upgrade ======="
         echo 'Looking for necessity to upgrade @world packages...'
-        emerge -1uDNvt @world
+        emerge -1uDNvt --backtrack=50 @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world upgrade failed ;-( =======" && exit $STAGE
 
         let STAGE++
