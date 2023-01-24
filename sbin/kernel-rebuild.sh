@@ -34,7 +34,6 @@ while true ; do
     esac
 done
 
-GENKERNEL_ARGS="$GENKERNEL_ARGS --oldconfig"
 [ "$SILENT" != "true" ] && GENKERNEL_ARGS="$GENKERNEL_ARGS --menuconfig"
 [ "$MRPROPER" == "true" ] && GENKERNEL_ARGS="$GENKERNEL_ARGS --mrproper"
 which genkernel &>/dev/null || USE_GENKERNEL=false
