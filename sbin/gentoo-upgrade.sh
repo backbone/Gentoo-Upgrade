@@ -561,7 +561,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 	if [ -f /etc/portage/need_world_rebuild ]; then
         echo "======= STAGE $STAGE: rebuild @world ======="
         source /etc/profile
-        emerge -1kev --keep-going=y @world
+        emerge -1kev --keep-going=y --backtrack=50 @world
         [ 0 -ne $? ] && echo "Stage $STAGE: @world rebuild failed ;-( =======" && exit $STAGE
         rm /etc/portage/need_world_rebuild
         [ 0 -ne $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_world_rebuild ;-( =======" && exit $STAGE
