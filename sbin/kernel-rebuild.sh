@@ -4,7 +4,7 @@ SILENT=false
 MRPROPER=false
 NICE_CMD="nice -n 19 ionice -c2"
 CONFIG_FILE=/proc/config.gz
-GENKERNEL_ARGS="--oldconfig"
+GENKERNEL_ARGS=""
 USE_GENKERNEL=true
 
 [ -f /etc/gentoo-upgrade.conf ] && source /etc/gentoo-upgrade.conf
@@ -34,6 +34,7 @@ while true ; do
     esac
 done
 
+GENKERNEL_ARGS="$GENKERNEL_ARGS --oldconfig"
 [ "$SILENT" != "true" ] && GENKERNEL_ARGS="$GENKERNEL_ARGS --menuconfig"
 [ "$MRPROPER" == "true" ] && GENKERNEL_ARGS="$GENKERNEL_ARGS --mrproper"
 which genkernel &>/dev/null || USE_GENKERNEL=false
