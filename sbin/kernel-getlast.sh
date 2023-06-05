@@ -58,14 +58,14 @@ kernel-config set $new_kernel
 kernel-clean.sh
 [ 0 -ne $? ] && echo "kernel-clean.sh failed ;-(" && exit -1
 
-vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`
+vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~;s~-r[0-9]\+~~'`
 [ "" == "$vmlinuz_file" ] && echo "vmlinuz_file == \"\"" && exit -1
 
-vmlinuz_file_x86_64=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`-x86_64
+vmlinuz_file_x86_64=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~;s~-r[0-9]\+~~'`-x86_64
 [ "" == "$vmlinuz_file_x86_64" ] && echo "vmlinuz_file_x86_64 == \"\"" && exit -1
 
 march=`uname -m`
-genkernel_file=/boot/`echo $new_kernel | sed "s~^linux~kernel-genkernel-${march}~"`
+genkernel_file=/boot/`echo $new_kernel | sed "s~^linux~kernel-genkernel-${march}~;s~-r[0-9]\+~~"`
 [ "" == "$genkernel_file" ] && echo "genkernel_file == \"\"" && exit -1
 if [[ ! -f "$vmlinuz_file" && ! -f "$vmlinuz_file_x86_64" && ! -f "$genkernel_file" || 1 -eq $FORCE_REBUILD ]]; then
     kernel-rebuild.sh $KERNEL_REBUILD_ARGS
