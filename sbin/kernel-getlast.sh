@@ -42,6 +42,7 @@ kernel_regex=`echo -n $current_kernel_src  | sed 's~[0-9]*\.[0-9]*\.[0-9]*~[0-9]
 
 new_kernel=`kernel-config list | cut -d" " -f6 | grep ^$kernel_regex$ | sort -V | tail -n1`
 [ "" == "$new_kernel" ] && echo "Couldn't find appropriate new kernel version ;-(" && exit -1
+echo new_kernel=$new_kernel
 
 # remounting file systems ro->rw
 for fs in $RW_REMOUNT; do
@@ -58,14 +59,17 @@ kernel-config set $new_kernel
 kernel-clean.sh
 [ 0 -ne $? ] && echo "kernel-clean.sh failed ;-(" && exit -1
 
-vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~;s~-r[0-9]\+~~'`
+vmlinuz_file=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`
 [ "" == "$vmlinuz_file" ] && echo "vmlinuz_file == \"\"" && exit -1
 
-vmlinuz_file_x86_64=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~;s~-r[0-9]\+~~'`-x86_64
+vmlinuz_file_x86_64=/boot/`echo $new_kernel | sed 's~^linux~vmlinuz~'`-x86_64
 [ "" == "$vmlinuz_file_x86_64" ] && echo "vmlinuz_file_x86_64 == \"\"" && exit -1
 
 march=`uname -m`
-genkernel_file=/boot/`echo $new_kernel | sed "s~^linux~kernel-genkernel-${march}~;s~-r[0-9]\+~~"`
+genkernel_file=/boot/`echo $new_kernel | sed "s~^linux~kernel-genkernel-${march}~"`
+echo vmlinuz_file=$vmlinuz_file
+echo vmlinuz_file_x86_64=$vmlinuz_file_x86_64
+echo genkernel_file=$genkernel_file
 [ "" == "$genkernel_file" ] && echo "genkernel_file == \"\"" && exit -1
 if [[ ! -f "$vmlinuz_file" && ! -f "$vmlinuz_file_x86_64" && ! -f "$genkernel_file" || 1 -eq $FORCE_REBUILD ]]; then
     kernel-rebuild.sh $KERNEL_REBUILD_ARGS
