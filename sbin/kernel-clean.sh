@@ -21,13 +21,13 @@ done
 
 # rm old modules
 echo REVISION=$REVISION
-cd /lib/modules && $NICE_CMD rm -rf `ls --color=never | sort -V | grep -vE "^$REVISION$|^$UNAME$"`
+cd /lib/modules && $NICE_CMD rm -rf `ls --color=never | sort -V | grep -vE "^$REVISION$|^$REVISION-x86_64$|^$UNAME$"`
 
 # rm old kernel revisions
 mount -o remount,rw /boot
 cd /boot
 for f in System.map config vmlinuz kernel-genkernel initramfs; do
-    rm -f `ls --color=never $f-* 2>/dev/null | sort -V | grep -vE "$REVISION$|$REVISION.img$|$UNAME$|$UNAME.img$"`
+    rm -f `ls --color=never $f-* 2>/dev/null | sort -V | grep -vE "$REVISION$|$REVISION-x86_64$|$REVISION.img$|$REVISION-x86_64.img$|$UNAME$|$UNAME-x86_64$|$UNAME.img$|$UNAME-x86_64.img$"`
 done
 mount -o remount,ro -force /boot
 
