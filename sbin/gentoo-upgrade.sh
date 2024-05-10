@@ -324,7 +324,7 @@ if [ $STAGE_CNT -eq $STAGE ]; then
 		emerge -uq1v perl
 		[ 0 -ne $? ] && echo "Stage $STAGE: perl package upgrading failed ;-( =======" && exit $STAGE
 		echo "Running perl-cleaner..."
-		$NICE_CMD perl-cleaner --reallyall
+		$NICE_CMD perl-cleaner --all
 		[ 0 != $? ] && echo "Stage $STAGE: perl-cleaner failed ;-( =======" && exit $STAGE
 		rm /etc/portage/need_upgrade_perl
 		[ 0 != $? ] && echo "Stage $STAGE: cann't remove /etc/portage/need_upgrade_perl ;-( =======" && exit $STAGE
